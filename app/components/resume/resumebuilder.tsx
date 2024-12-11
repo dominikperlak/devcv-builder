@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { ResumeForm } from './resumeform';
 import { ResumePreview } from './resumepreview';
 import { Button } from '../ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const Builder = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [formData, setFormData] = useState({});
   const [prevFormData, setPrevFormData] = useState({});
 
@@ -22,7 +22,7 @@ const Builder = () => {
       <header className="border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="container py-4 flex items-center justify-between">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => router.push('/')}
             className="text-2xl font-medium"
           >
             DevResume
