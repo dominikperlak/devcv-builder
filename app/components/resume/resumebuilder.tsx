@@ -1,5 +1,5 @@
 'use client';
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { ResumeForm } from './resumeform';
 import { ResumePreview } from './resumepreview';
 import { Button } from '../ui/button';
