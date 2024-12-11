@@ -1,0 +1,5 @@
+const builder = () => {
+  return <h1></h1>;
+};
+
+export default builder;
