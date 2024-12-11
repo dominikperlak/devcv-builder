@@ -1,5 +1,14 @@
-const builder = () => {
-  return <h1></h1>;
+'use client';
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Builder from '../components/resume/resumebuilder';
+
+const Builderpage = () => {
+  return (
+    <Router>
+      <Builder />
+    </Router>
+  );
 };
 
-export default builder;
+export default Builderpage;
