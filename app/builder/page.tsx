@@ -1,9 +1,16 @@
 'use client';
 import React from 'react';
-import Builder from '../components/resume/resumebuilder';
+import dynamic from 'next/dynamic';
+const Builder = dynamic(() => import('../components/resumebuilder'), {
+  ssr: false,
+});
 
 const Builderpage = () => {
-  return <Builder />;
+  return (
+    <div>
+      <Builder />
+    </div>
+  );
 };
 
 export default Builderpage;

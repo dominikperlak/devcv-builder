@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
 import { Github, Linkedin, Plus, Trash2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from './ui/select';
 
 export const ResumeForm = ({ onUpdate }: { onUpdate: (data: any) => void }) => {
   const { toast } = useToast();

@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { Button } from '../ui/button';
+import { Button } from './ui/button';
 import { Share2, Download, Linkedin, Mail, Github } from 'lucide-react';
-import { generatePDF } from '../../utilis/pdfUtilis';
+import { generatePDF } from '../utilis/pdfUtilis';
 import { useToast } from '@/hooks/use-toast';
 
 export const ResumePreview = ({ formData }: { formData?: any }) => {
