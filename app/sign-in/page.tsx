@@ -15,7 +15,7 @@ const Landing = () => {
             <Button
               variant="ghost"
               className="text-white hover:text-/80"
-              onClick={() => router.push('/sign-in')} // Dodany router.push
+              onClick={() => router.push('/sign-in')}
             >
               Sign In
             </Button>
