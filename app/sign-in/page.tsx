@@ -1,108 +1,155 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Github, Linkedin, ArrowRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { signIn } from 'next-auth/react';
 
-const Landing = () => {
+const SignIn = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: 'Coming Soon',
+      description: 'Email/password authentication will be available soon!',
+    });
+  };
+
+  const handleGithubSignIn = async () => {
+    try {
+      const result = await signIn('github', {
+        callbackUrl: process.env.NEXT_PUBLIC_GITHUB_CALLBACK_URL,
+      });
+
+      if (result?.error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to initialize GitHub sign in.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Redirecting to GitHub',
+          description: 'Please complete the authentication process.',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred during GitHub sign in.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
         <header className="py-6 flex items-center justify-between">
-          <h1 className="text-2xl font-medium">DevResume</h1>
-          <div className="flex gap-4">
-            <Button
-              variant="ghost"
-              className="text-white hover:text-/80"
-              onClick={() => router.push('/sign-in')}
-            >
-              Sign In
-            </Button>
-            <Button
-              onClick={() => router.push('/builder')}
-              className="bg-white text-slate-900 hover:bg-white/90"
-            >
-              Get Started
-            </Button>
-          </div>
+          <h1
+            onClick={() => router.push('/')}
+            className="text-2xl font-medium cursor-pointer hover:text-white/90 transition-colors"
+          >
+            DevResume
+          </h1>
         </header>
-
-        <div className="py-24 md:py-32 space-y-12">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
-              Craft Your Perfect Developer Resume
-            </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Create a standout resume that showcases your technical expertise.
-              Import your experience directly from GitHub and LinkedIn.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={() => router.push('/builder')}
-                className="bg-white text-slate-900 hover:bg-white/90 text-lg group"
-              >
-                Create Resume
-                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 text-lg"
-                style={{ color: 'white' }}
-              >
-                View Templates
-              </Button>
+        <div className="max-w-md mx-auto mt-20 p-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
+          <h2 className="text-3xl font-bold text-center mb-8">Welcome Back</h2>
+          <Button
+            onClick={handleGithubSignIn}
+            className="w-full mb-8 bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center gap-2 h-12"
+          >
+            <Github className="w-5 h-5" />
+            Continue with GitHub
+          </Button>
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-slate-900 text-slate-400">
+                Or continue with email
+              </span>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <Github className="h-6 w-6 text-blue-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">GitHub Integration</h3>
-              <p className="text-slate-400">
-                Import your projects and contributions directly from your GitHub
-                profile.
-              </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-slate-300 mb-2"
+              >
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                className="w-full bg-white/5 border-white/10 text-white placeholder:text-slate-400"
+                required
+              />
             </div>
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <Linkedin className="h-6 w-6 text-blue-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">LinkedIn Sync</h3>
-              <p className="text-slate-400">
-                Seamlessly import your professional experience from LinkedIn.
-              </p>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-300 mb-2"
+              >
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                className="w-full bg-white/5 border-white/10 text-white placeholder:text-slate-400"
+                required
+              />
             </div>
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <svg
-                  className="h-6 w-6 text-blue-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">One-Click Export</h3>
-              <p className="text-slate-400">
-                Download your resume in multiple formats or share via a unique
-                link.
-              </p>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-white/10 bg-white/5"
+                />
+                <span className="ml-2 text-sm text-slate-300">Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="text-sm text-blue-400 hover:text-blue-300"
+              >
+                Forgot password?
+              </button>
             </div>
-          </div>
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white h-12"
+            >
+              Sign in
+            </Button>
+          </form>
+          <p className="mt-6 text-center text-sm text-slate-400">
+            Don&apos;t have an account?{' '}
+            <button
+              onClick={() => router.push('/signup')}
+              className="text-blue-400 hover:text-blue-300"
+            >
+              Sign up
+            </button>
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default Landing;
+export default SignIn;
