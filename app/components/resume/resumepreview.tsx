@@ -10,7 +10,8 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import SortableItem from '../sortableitem';
+import SortableItem from './sortableitem';
+
 export const ResumePreview = ({ formData }: { formData?: any }) => {
   const { toast } = useToast();
 
@@ -19,6 +20,7 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
     'Summary',
     'Work Experience',
     'Education',
+    'Projects',
   ]);
 
   const handleDragEnd = (event: any) => {
@@ -147,27 +149,29 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
                     </div>
                   )}
                   {section === 'Work Experience' &&
-                    formData?.jobs?.length > 0 && (
+                    formData?.workExperience?.length > 0 && (
                       <div className="space-y-4">
                         <h2 className="text-lg font-medium border-b border-slate-200 pb-1 text-slate-900">
                           Work Experience
                         </h2>
-                        {formData.jobs.map((job: any, index: number) => (
-                          <div key={index} className="space-y-2">
-                            <h3 className="font-medium text-slate-900">
-                              {job.title}
-                            </h3>
-                            <p className="text-sm text-slate-600">
-                              {job.company}
-                            </p>
-                            <p className="text-sm text-slate-500">
-                              {job.startDate} - {job.endDate}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              {job.description}
-                            </p>
-                          </div>
-                        ))}
+                        {formData.workExperience.map(
+                          (exp: any, index: number) => (
+                            <div key={index} className="space-y-2">
+                              <h3 className="font-medium text-slate-900">
+                                {exp.position}
+                              </h3>
+                              <p className="text-sm text-slate-600">
+                                {exp.company}
+                              </p>
+                              <p className="text-sm text-slate-500">
+                                {exp.startDate} - {exp.endDate}
+                              </p>
+                              <p className="text-sm text-slate-600">
+                                {exp.description}
+                              </p>
+                            </div>
+                          )
+                        )}
                       </div>
                     )}
                   {section === 'Education' &&
@@ -191,6 +195,36 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
                         ))}
                       </div>
                     )}
+                  {section === 'Projects' && formData?.projects?.length > 0 && (
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-medium border-b border-slate-200 pb-1 text-slate-900">
+                        Projects
+                      </h2>
+                      {formData.projects.map((project: any, index: number) => (
+                        <div key={index} className="space-y-2">
+                          <h3 className="font-medium text-slate-900">
+                            {project.name}
+                          </h3>
+                          <p className="text-sm text-slate-600">
+                            {project.technologies}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            {project.description}
+                          </p>
+                          {project.link && (
+                            <a
+                              href={project.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline"
+                            >
+                              View Project
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </SortableItem>
               ))}
             </div>
