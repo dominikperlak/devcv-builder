@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SessionProvider } from 'next-auth/react'; // Dodaj ten import
+import { SessionProvider } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';

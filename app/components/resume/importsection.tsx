@@ -83,21 +83,14 @@ export const ImportSection = ({ setValue }: ImportSectionProps) => {
         </span>
         Quick Import
       </h3>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="flex justify-center">
         <Button
           variant="outline"
-          className="h-16 gap-3 border-slate-200 text-slate-700 hover:bg-slate-50"
+          className="h-20 gap-4 border-slate-200 text-slate-700 hover:bg-slate-50"
           onClick={handleGitHubImport}
         >
-          <Github className="w-5 h-5" />
+          <Github className="w-6 h-6" />
           Import from GitHub
-        </Button>
-        <Button
-          variant="outline"
-          className="h-16 gap-3 border-slate-200 text-slate-700 hover:bg-slate-50"
-        >
-          <Linkedin className="w-5 h-5" />
-          Import from LinkedIn
         </Button>
       </div>
     </div>

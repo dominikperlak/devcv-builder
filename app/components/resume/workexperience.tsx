@@ -1,24 +1,66 @@
 import React from 'react';
-import { UseFormRegister, useFieldArray } from 'react-hook-form';
+import {
+  Control,
+  UseFormRegister,
+  UseFormSetValue,
+  useFieldArray,
+} from 'react-hook-form';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-import { Plus, Trash2, Briefcase } from 'lucide-react';
+import { Plus, Trash2, Briefcase, Sparkles } from 'lucide-react';
+import { enhanceWithAI } from '@/app/utilis/openai';
+import { useToast } from '@/hooks/use-toast';
+import { ResumeFormData } from '@/types/resume';
 
 interface WorkExperienceProps {
-  register: UseFormRegister<any>;
-  control: any;
+  register: UseFormRegister<ResumeFormData>;
+  control: Control<ResumeFormData>;
+  setValue: UseFormSetValue<ResumeFormData>;
 }
 
 export const WorkExperienceSection = ({
   register,
   control,
+  setValue,
 }: WorkExperienceProps) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'workExperience',
   });
+  const { toast } = useToast();
+  const [enhancingIndex, setEnhancingIndex] = React.useState<number | null>(
+    null
+  );
+
+  const handleEnhanceWithAI = async (index: number) => {
+    try {
+      setEnhancingIndex(index);
+      const currentDescription =
+        (document.getElementById(`description-${index}`) as HTMLTextAreaElement)
+          ?.value || '';
+      const enhancedDescription = await enhanceWithAI(
+        currentDescription,
+        'experience'
+      );
+      setValue(`workExperience.${index}.description`, enhancedDescription);
+
+      toast({
+        title: 'Success',
+        description: 'Your work experience has been enhanced with AI!',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description:
+          'Failed to enhance description. Please check the API configuration.',
+        variant: 'destructive',
+      });
+    } finally {
+      setEnhancingIndex(null);
+    }
+  };
 
   return (
     <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
@@ -85,15 +127,28 @@ export const WorkExperienceSection = ({
               type="button"
               variant="ghost"
               size="icon"
-              className="ml-2"
+              className="h-8 w-8"
               onClick={() => remove(index)}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
           <div className="space-y-2">
-            <Label>Description</Label>
+            <div className="flex items-center justify-between">
+              <Label>Description</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => handleEnhanceWithAI(index)}
+                disabled={enhancingIndex === index}
+                className="h-8 w-8"
+              >
+                <Sparkles className="h-4 w-4" />
+              </Button>
+            </div>
             <Textarea
+              id={`description-${index}`}
               {...register(`workExperience.${index}.description`)}
               placeholder="Describe your responsibilities and achievements..."
               className="h-32"

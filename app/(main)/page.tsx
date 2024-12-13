@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '../components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Github, Linkedin, ArrowRight } from 'lucide-react';
+import { Github, ArrowRight, Download } from 'lucide-react';
 
 const Landing = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const Landing = () => {
             <Button
               variant="ghost"
               className="text-white hover:text-/80"
-              onClick={() => router.push('/sign-in')} // Dodany router.push
+              onClick={() => router.push('/sign-in')}
             >
               Sign In
             </Button>
@@ -35,7 +35,7 @@ const Landing = () => {
             </h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               Create a standout resume that showcases your technical expertise.
-              Import your experience directly from GitHub and LinkedIn.
+              Import your experience directly from GitHub and other platforms.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -46,56 +46,33 @@ const Landing = () => {
                 Create Resume
                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 text-lg"
-                style={{ color: 'white' }}
-              >
-                View Templates
-              </Button>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <Github className="h-6 w-6 text-blue-400" />
+
+          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 mt-16">
+            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+              <div className="mx-auto h-16 w-16 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6">
+                <Github className="h-8 w-8 text-blue-400" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">GitHub Integration</h3>
-              <p className="text-slate-400">
-                Import your projects and contributions directly from your GitHub
-                profile.
+              <h3 className="text-2xl font-bold mb-4 text-blue-300">
+                GitHub Integration
+              </h3>
+              <p className="text-slate-300 mb-6">
+                Seamlessly import your projects, contributions, and coding
+                history directly from your GitHub profile with a single click.
               </p>
             </div>
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <Linkedin className="h-6 w-6 text-blue-400" />
+
+            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 text-center hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+              <div className="mx-auto h-16 w-16 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6">
+                <Download className="h-8 w-8 text-blue-300" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">LinkedIn Sync</h3>
-              <p className="text-slate-400">
-                Seamlessly import your professional experience from LinkedIn.
-              </p>
-            </div>
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <div className="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
-                <svg
-                  className="h-6 w-6 text-blue-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">One-Click Export</h3>
-              <p className="text-slate-400">
-                Download your resume in multiple formats or share via a unique
-                link.
+              <h3 className="text-2xl font-bold mb-4 text-blue-300">
+                One-Click Export
+              </h3>
+              <p className="text-slate-300 mb-6">
+                Instantly download your professionally crafted resume in
+                multiple formats or generate a shareable professional link.
               </p>
             </div>
           </div>

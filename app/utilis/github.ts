@@ -39,7 +39,7 @@ export const fetchGitHubProfile = async (
       name: repo.name,
       description: repo.description || '',
       language: repo.language || 'Not specified',
-      stars: repo.stargazers_count || 0, // Default to 0 if undefined
+      stars: repo.stargazers_count || 0,
     }));
 
     return {

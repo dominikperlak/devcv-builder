@@ -1,18 +1,17 @@
+'use client';
 import React from 'react';
-import { UseFormRegister } from 'react-hook-form';
+import { UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import { ResumeFormData } from '@/types/resume';
 
 export interface PersonalInfoProps {
-  register: UseFormRegister<any>;
-  enhanceWithAI?: () => void; // Made optional with ?
+  register: UseFormRegister<ResumeFormData>;
+  setValue: UseFormSetValue<ResumeFormData>;
 }
 
-export const PersonalInfoSection = ({
-  register,
-  enhanceWithAI,
-}: PersonalInfoProps) => {
+export const PersonalInfoSection = ({ register }: PersonalInfoProps) => {
   return (
     <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
       <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
@@ -45,11 +44,16 @@ export const PersonalInfoSection = ({
       </div>
       <div className="space-y-2">
         <Label>Professional Title</Label>
-        <Input {...register('title')} placeholder="Full Stack Developer" />
+        <Input
+          id="title"
+          {...register('title')}
+          placeholder="Full Stack Developer"
+        />
       </div>
       <div className="space-y-2">
         <Label>Professional Summary</Label>
         <Textarea
+          id="summary"
           {...register('summary')}
           placeholder="Brief overview of your professional background and key strengths..."
           className="h-32"

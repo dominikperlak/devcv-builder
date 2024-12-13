@@ -15,16 +15,21 @@ import { EducationSection } from './educationsection';
 import { ProjectsSection } from './projectsection';
 import { useToast } from '@/hooks/use-toast';
 
-export const ResumeForm = ({ onUpdate }: { onUpdate: (data: any) => void }) => {
+import { ResumeFormData } from '@/types/resume';
+
+export const ResumeForm = ({
+  onUpdate,
+}: {
+  onUpdate: (data: ResumeFormData) => void;
+}) => {
   const { toast } = useToast();
-  const { register, control, watch, setValue } = useForm({
+  const { register, control, watch, setValue } = useForm<ResumeFormData>({
     defaultValues: {
       firstName: '',
       lastName: '',
       title: '',
       summary: '',
       email: '',
-      linkedin: '',
       github: '',
       workExperience: [],
       education: [],
@@ -58,9 +63,13 @@ export const ResumeForm = ({ onUpdate }: { onUpdate: (data: any) => void }) => {
         </div>
 
         <ImportSection setValue={setValue} />
-        <PersonalInfoSection register={register} />
+        <PersonalInfoSection register={register} setValue={setValue} />
         <ContactSection register={register} />
-        <WorkExperienceSection register={register} control={control} />
+        <WorkExperienceSection
+          register={register}
+          control={control}
+          setValue={setValue}
+        />
         <EducationSection register={register} control={control} />
         <ProjectsSection register={register} control={control} />
       </div>

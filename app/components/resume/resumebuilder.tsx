@@ -27,12 +27,6 @@ const Builder = () => {
           >
             DevResume
           </button>
-          <div className="flex gap-3">
-            <Button variant="ghost" size="sm">
-              Save Draft
-            </Button>
-            <Button size="sm">Preview</Button>
-          </div>
         </div>
       </header>
       <main className="container py-8">
