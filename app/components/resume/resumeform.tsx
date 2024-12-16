@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/app/components/ui/select';
 import { PersonalInfoSection } from './personalinfosection';
-import { ContactSection } from './contactsection';
+import { ContactSection } from '@/app/components/resume/contactsection';
 import { ImportSection } from './importsection';
 import { WorkExperienceSection } from './workexperience';
 import { EducationSection } from './educationsection';

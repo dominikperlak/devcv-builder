@@ -1,60 +1,143 @@
 'use client';
 import React from 'react';
 import { Button } from '../ui/button';
-import { Github, Linkedin } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  fetchGitHubProfile,
-  generateSummaryFromGitHub,
-} from '@/app/utilis/github';
+import { Octokit } from '@octokit/rest';
+import { signIn, useSession } from 'next-auth/react';
 import { UseFormSetValue } from 'react-hook-form';
+import { ResumeFormData } from '@/types/resume';
 
 interface ImportSectionProps {
-  setValue: UseFormSetValue<any>;
+  setValue: UseFormSetValue<ResumeFormData>;
 }
 
 export const ImportSection = ({ setValue }: ImportSectionProps) => {
   const { toast } = useToast();
+  const { data: session } = useSession();
 
-  const handleGitHubImport = async () => {
+  const getProjectDescription = async (octokit: Octokit, repo: any) => {
     try {
-      const username = prompt('Enter your GitHub username:');
-      if (!username) return;
+      if (repo.description) {
+        return (
+          repo.description.slice(0, 150) +
+          (repo.description.length > 150 ? '...' : '')
+        );
+      }
 
+      try {
+        const { data: readmeData } = await octokit.repos.getReadme({
+          owner: repo.owner.login,
+          repo: repo.name,
+        });
+
+        if (readmeData && readmeData.content) {
+          const content = Buffer.from(readmeData.content, 'base64').toString();
+          const firstLine = content
+            .split('\n')
+            .find((line) => line.trim() && !line.trim().startsWith('#'));
+
+          if (firstLine) {
+            return (
+              firstLine.slice(0, 150).trim() +
+              (firstLine.length > 150 ? '...' : '')
+            );
+          }
+        }
+      } catch (readmeError) {
+        if (
+          readmeError instanceof Error &&
+          'status' in readmeError &&
+          readmeError.status === 404
+        ) {
+          console.log(`No README found for repository: ${repo.name}`);
+        } else {
+          console.error('Error fetching README:', readmeError);
+        }
+        return '';
+      }
+
+      return '';
+    } catch (error) {
+      console.log('Error getting project description:', error);
+      return '';
+    }
+  };
+
+  const handleGitHubImport = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!session?.accessToken) {
+      signIn('github');
+      return;
+    }
+
+    try {
       toast({
         title: 'Importing from GitHub',
         description: 'Please wait while we fetch your information...',
       });
 
-      const profile = await fetchGitHubProfile(username);
-      const summary = generateSummaryFromGitHub(profile);
+      const octokit = new Octokit({
+        auth: session.accessToken,
+      });
 
-      // Set basic profile information
-      setValue('github', `https://github.com/${username}`);
-      setValue('summary', summary);
+      const { data: profile } = await octokit.users.getAuthenticated();
+
       if (profile.name) {
-        const [firstName, ...lastNameParts] = profile.name.split(' ');
+        const nameParts = profile.name.split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ');
         setValue('firstName', firstName);
-        setValue('lastName', lastNameParts.join(' '));
+        setValue('lastName', lastName || '');
       }
+
+      if (profile.company) {
+        setValue('title', `Software Engineer at ${profile.company}`);
+      }
+
       if (profile.email) {
         setValue('email', profile.email);
       }
 
-      // Import projects from GitHub repositories
-      const projects = profile.repos.map((repo) => ({
-        name: repo.name,
-        description: repo.description,
-        technologies: repo.language,
-        link: `https://github.com/${username}/${repo.name}`,
-      }));
-      setValue('projects', projects);
+      if (profile.html_url) {
+        setValue('github', profile.html_url);
+      }
+
+      if (profile.bio) {
+        setValue('summary', profile.bio);
+      }
+
+      const { data: repos } = await octokit.repos.listForAuthenticatedUser({
+        sort: 'updated',
+        per_page: 5,
+        visibility: 'public',
+      });
+
+      const projects = await Promise.all(
+        repos.map(async (repo) => {
+          const description = await getProjectDescription(octokit, repo);
+          return {
+            id: repo.id.toString(),
+            name: repo.name,
+            description: description,
+            technologies: repo.language || 'Various',
+            link: repo.html_url,
+          };
+        })
+      );
+
+      const projectsWithDescriptions = projects.filter(
+        (project) => project.description
+      );
+      setValue('projects', projectsWithDescriptions);
 
       toast({
         title: 'Success',
         description: 'Your GitHub information has been imported successfully!',
       });
     } catch (error) {
+      console.error('GitHub import error:', error);
       toast({
         title: 'Error',
         description: 'Failed to import GitHub information. Please try again.',
@@ -85,12 +168,13 @@ export const ImportSection = ({ setValue }: ImportSectionProps) => {
       </h3>
       <div className="flex justify-center">
         <Button
+          type="button"
           variant="outline"
           className="h-20 gap-4 border-slate-200 text-slate-700 hover:bg-slate-50"
           onClick={handleGitHubImport}
         >
           <Github className="w-6 h-6" />
-          Import from GitHub
+          {session?.accessToken ? 'Import from GitHub' : 'Sign in with GitHub'}
         </Button>
       </div>
     </div>
