@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -14,8 +16,9 @@ import { WorkExperienceSection } from './workexperience';
 import { EducationSection } from './educationsection';
 import { ProjectsSection } from './projectsection';
 import { useToast } from '@/hooks/use-toast';
-
 import { ResumeFormData } from '@/types/resume';
+
+type Style = 'modern' | 'classic' | 'minimal' | 'creative';
 
 export const ResumeForm = ({
   onUpdate,
@@ -34,6 +37,7 @@ export const ResumeForm = ({
       workExperience: [],
       education: [],
       projects: [],
+      style: 'modern',
     },
   });
 
@@ -43,13 +47,15 @@ export const ResumeForm = ({
     onUpdate(formData);
   }, [formData, onUpdate]);
 
+  const handleStyleChange = (value: Style) => {
+    setValue('style', value);
+  };
+
   return (
     <form className="space-y-8">
       <div className="space-y-6">
         <div className="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-4">
-          <Select
-            onValueChange={(value) => console.log('Selected style:', value)}
-          >
+          <Select defaultValue="modern" onValueChange={handleStyleChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select style" />
             </SelectTrigger>

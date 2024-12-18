@@ -6,18 +6,21 @@ export const authOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: 'read:user user:email',
+        },
+      },
     }),
   ],
   pages: {
     signIn: '/sign-in',
+    error: '/auth/error',
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
-      }
-      if (new URL(url).origin === baseUrl) {
+      if (url.startsWith(baseUrl)) {
         return url;
       }
       return `${baseUrl}/builder`;
