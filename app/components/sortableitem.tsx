@@ -15,8 +15,11 @@ const SortableItem = ({
     });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: transform ? CSS.Transform.toString(transform) : undefined,
+    transition: transition || 'transform 200ms ease',
+    boxShadow: transform ? '0 4px 8px rgba(0, 0, 0, 0.2)' : undefined,
+    cursor: transform ? 'grabbing' : 'grab',
+    zIndex: transform ? 999 : 1,
   };
 
   return (

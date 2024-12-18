@@ -7,8 +7,8 @@ interface SortableItemProps {
   children: React.ReactNode;
 }
 
-const SortableItem = ({ id, children }: SortableItemProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
+const SortableItem: React.FC<SortableItemProps> = ({ id, children }) => {
+  const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({ id });
 
   const style = {
@@ -17,7 +17,7 @@ const SortableItem = ({ id, children }: SortableItemProps) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
       {children}
     </div>
   );
