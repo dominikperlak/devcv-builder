@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
+import { ImportSection } from './importsection';
 
 type ResumeStyle = 'modern' | 'classic' | 'minimal' | 'creative';
 
@@ -84,6 +85,8 @@ export const ResumeForm = ({
           </Select>
         </div>
 
+        <ImportSection setValue={setValue} />
+
         <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
           <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
             <span className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -91,23 +94,7 @@ export const ResumeForm = ({
             </span>
             Quick Import
           </h3>
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              variant="outline"
-              className="h-20 gap-4 border-slate-200 text-slate-700 hover:bg-slate-50"
-              onClick={() => {
-                toast({
-                  title: 'GitHub Import',
-                  description:
-                    'GitHub import functionality will be implemented soon.',
-                });
-              }}
-            >
-              <Github className="w-6 h-6" />
-              Import from GitHub
-            </Button>
-          </div>
+          <div className="flex justify-center"></div>
         </div>
 
         <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
