@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Card } from '../ui/card';
 import { Download, Eye } from 'lucide-react';
@@ -21,7 +22,7 @@ export const Stats = () => {
           <Eye className="h-6 w-6 text-[#0EA5E9]" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Total Views (24h)</p>
+          <p className="text-sm text-muted-foreground">Total Logins (30d)</p>
           <h3 className="text-2xl font-bold">
             {isLoading ? '...' : stats.totalViews}
           </h3>
@@ -33,7 +34,7 @@ export const Stats = () => {
           <Download className="h-6 w-6 text-[#0EA5E9]" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Total Downloads (24h)</p>
+          <p className="text-sm text-muted-foreground">Total Downloads (30d)</p>
           <h3 className="text-2xl font-bold">
             {isLoading ? '...' : stats.totalDownloads}
           </h3>

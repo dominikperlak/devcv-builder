@@ -1,21 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Share2, Download } from 'lucide-react';
 import { generatePDF } from '@/app/utilis/pdfutilis';
 import { useToast } from '@/hooks/use-toast';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { generateShareLink } from '@/app/utilis/shareutilis';
-import { ShareModal } from '../share/sharemodal';
+import { ShareModal } from '@/app/components/share/sharemodal';
 import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
 import { ResumeContent } from './resumecontent';
+import { ResumeFormData } from '@/types/resume';
 
-export const ResumePreview = ({ formData }: { formData?: any }) => {
+interface ResumePreviewProps {
+  formData: ResumeFormData;
+}
+
+export const ResumePreview = ({ formData }: ResumePreviewProps) => {
   const { toast } = useToast();
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareLink, setShareLink] = useState('');
@@ -28,32 +33,6 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
     'Projects',
   ]);
 
-  useEffect(() => {
-    const generateLink = async () => {
-      if (shareModalOpen) {
-        const { link, error } = await generateShareLink(formData);
-
-        if (error) {
-          console.error('Error generating share link:', error);
-
-          toast({
-            title: 'Error',
-            description: error,
-            variant: 'destructive',
-          });
-
-          setShareModalOpen(false);
-
-          return;
-        }
-
-        setShareLink(link);
-      }
-    };
-
-    generateLink();
-  }, [shareModalOpen, formData, toast]);
-
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
@@ -61,7 +40,6 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
       setSections((prevSections) => {
         const oldIndex = prevSections.indexOf(active.id);
         const newIndex = prevSections.indexOf(over.id);
-
         return arrayMove(prevSections, oldIndex, newIndex);
       });
     }
@@ -69,7 +47,6 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
 
   const handleDownload = async () => {
     const success = await generatePDF('resume-preview', 'my-resume.pdf');
-
     if (success) {
       toast({
         title: 'Success',
@@ -84,6 +61,28 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const response = await generateShareLink(formData);
+      if (response.link) {
+        setShareLink(response.link);
+        setShareModalOpen(true);
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to generate share link. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate share link. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
       <div className="p-4 border-b border-slate-200 flex items-center justify-between">
@@ -93,7 +92,7 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
             variant="ghost"
             size="sm"
             className="text-slate-700 hover:text-slate-900 flex items-center gap-2"
-            onClick={() => setShareModalOpen(true)}
+            onClick={handleShare}
           >
             <Share2 className="w-4 h-4" />
             Share
