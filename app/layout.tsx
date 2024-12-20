@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'DevResume',
+  title: 'ResumeBot',
   description:
     'Create a standout resume that showcases your technical expertise. Import your experience directly from GitHub.',
 };
