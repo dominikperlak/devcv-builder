@@ -90,16 +90,6 @@ export const ResumeForm = ({
         <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
           <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
             <span className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Github className="w-4 h-4 text-blue-600" />
-            </span>
-            Quick Import
-          </h3>
-          <div className="flex justify-center"></div>
-        </div>
-
-        <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
-          <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
-            <span className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <FileText className="w-4 h-4 text-blue-600" />
             </span>
             Contact Information
