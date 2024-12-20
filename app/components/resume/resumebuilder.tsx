@@ -3,20 +3,30 @@ import React, { useState } from 'react';
 import { ResumeForm } from './resumeform';
 import { ResumePreview } from './resumepreview';
 import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
+import { Button } from '@/app/components/ui/button';
 import { LayoutDashboard } from 'lucide-react';
-import Image from 'next/image';
-
+import Logo from '@/public/logo';
+import { ResumeFormData } from '@/types/resume';
 const Builder = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({});
-  const [prevFormData, setPrevFormData] = useState({});
+  const [formData, setFormData] = useState<ResumeFormData>({
+    firstName: '',
+    lastName: '',
+    title: '',
+    summary: '',
+    email: '',
+    github: '',
+    linkedin: '',
+    workExperience: [],
+    education: [],
+    projects: [],
+    skills: [],
+    style: 'modern',
+  });
 
-  const handleFormUpdate = (data: any) => {
-    if (JSON.stringify(data) !== JSON.stringify(prevFormData)) {
-      setFormData(data);
-      setPrevFormData(data);
-    }
+  const handleFormUpdate = (data: ResumeFormData) => {
+    console.log('Form data updated:', data);
+    setFormData(data);
   };
 
   return (
@@ -27,12 +37,7 @@ const Builder = () => {
             onClick={() => router.push('/')}
             className="text-2xl font-medium text-slate-900 hover:text-slate-700 transition-colors"
           >
-            <Image
-              src="/devresume.svg"
-              alt="DevResume Logo"
-              width={250}
-              height={60}
-            />
+            <Logo className="w-[170px]" />
           </button>
           <Button
             onClick={() => router.push('/dashboard')}

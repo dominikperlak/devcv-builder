@@ -1,7 +1,13 @@
 'use client';
 
 import html2pdf from 'html2pdf.js';
-import { supabase } from '@/lib/supabase';
+
+const incrementDownloadCount = () => {
+  const currentCount = parseInt(
+    localStorage.getItem('pdf_downloads_count') || '0'
+  );
+  localStorage.setItem('pdf_downloads_count', (currentCount + 1).toString());
+};
 
 export const generatePDFBlob = async (
   elementId: string,
@@ -30,22 +36,6 @@ export const generatePDFBlob = async (
   }
 };
 
-const trackDownload = async () => {
-  try {
-    const { error } = await supabase.from('cvs').insert([
-      {
-        created_at: new Date().toISOString(),
-      },
-    ]);
-
-    if (error) {
-      console.error('Error tracking download:', error);
-    }
-  } catch (error) {
-    console.error('Failed to track download:', error);
-  }
-};
-
 export const generatePDF = async (
   elementId: string,
   filename: string
@@ -61,7 +51,7 @@ export const generatePDF = async (
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    await trackDownload();
+    incrementDownloadCount();
 
     return true;
   } catch (error) {

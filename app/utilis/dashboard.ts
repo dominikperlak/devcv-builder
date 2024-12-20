@@ -1,38 +1,32 @@
 import { supabase } from '@/lib/supabase';
 import { ChartDataPoint, StatsData } from '@/types/dashboard';
+import { format, subDays } from 'date-fns';
 
 export const fetchStats = async (): Promise<StatsData> => {
   try {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    const thirtyDaysAgo = subDays(new Date(), 30);
 
     const { data: viewsData, error: viewsError } = await supabase
       .from('cvs')
       .select('id')
-      .gte('created_at', yesterday.toISOString())
+      .gte('created_at', thirtyDaysAgo.toISOString())
       .lt('created_at', new Date().toISOString());
 
     if (viewsError) {
+      console.error('Error fetching views:', viewsError);
       throw viewsError;
     }
 
-    const { data: downloadsData, error: downloadsError } = await supabase
-      .from('cvs')
-      .select('id')
-      .gte('created_at', yesterday.toISOString())
-      .lt('created_at', new Date().toISOString());
-
-    if (downloadsError) {
-      throw downloadsError;
-    }
+    const downloads = parseInt(
+      localStorage.getItem('pdf_downloads_count') || '0'
+    );
 
     return {
       totalViews: viewsData?.length || 0,
-      totalDownloads: downloadsData?.length || 0,
+      totalDownloads: downloads,
     };
   } catch (error) {
     console.error('Error fetching stats:', error);
-
     return {
       totalViews: 0,
       totalDownloads: 0,
@@ -42,35 +36,37 @@ export const fetchStats = async (): Promise<StatsData> => {
 
 export const fetchChartData = async (): Promise<ChartDataPoint[]> => {
   try {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    const thirtyDaysAgo = subDays(new Date(), 30);
 
-    const { data, error } = await supabase
+    const { data: viewsData, error: viewsError } = await supabase
       .from('cvs')
       .select('created_at')
-      .gte('created_at', yesterday.toISOString())
+      .gte('created_at', thirtyDaysAgo.toISOString())
       .lt('created_at', new Date().toISOString());
 
-    if (error) {
-      throw error;
+    if (viewsError) {
+      console.error('Error fetching chart data:', viewsError);
+      throw viewsError;
     }
 
-    const hourlyData = Array.from({ length: 24 }, (_, i) => ({
-      hour: i,
+    const dailyData = Array.from({ length: 30 }, (_, i) => ({
+      date: format(subDays(new Date(), 29 - i), 'MMM dd'),
       views: 0,
     }));
 
-    data?.forEach((record) => {
-      const hour = new Date(record.created_at).getHours();
-      hourlyData[hour].views++;
+    viewsData?.forEach((record) => {
+      const recordDate = format(new Date(record.created_at), 'MMM dd');
+      const dayData = dailyData.find((day) => day.date === recordDate);
+      if (dayData) {
+        dayData.views++;
+      }
     });
 
-    return hourlyData;
+    return dailyData;
   } catch (error) {
     console.error('Error fetching chart data:', error);
-
-    return Array.from({ length: 24 }, (_, i) => ({
-      hour: i,
+    return Array.from({ length: 30 }, (_, i) => ({
+      date: format(subDays(new Date(), 29 - i), 'MMM dd'),
       views: 0,
     }));
   }

@@ -12,7 +12,7 @@ interface ResumeStyleProps {
 
 export const ResumeStyle = ({ data, children }: ResumeStyleProps) => {
   const StyleComponent = (() => {
-    console.log('ResumeStyle data.style:', data.style); // Debugging line
+    console.log('ResumeStyle data.style:', data.style);
     switch (data.style) {
       case 'classic':
         return ClassicStyle;

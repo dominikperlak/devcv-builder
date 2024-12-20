@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Card } from '../ui/card';
 import {
@@ -19,7 +20,10 @@ export const Chart = () => {
     queryKey: ['cv-chart-data'],
     queryFn: fetchChartData,
     refetchInterval: 30000,
-    initialData: Array.from({ length: 24 }, (_, i) => ({ hour: i, views: 0 })),
+    initialData: Array.from({ length: 30 }, (_, i) => ({
+      date: '',
+      views: 0,
+    })),
   });
 
   if (isLoading) {
@@ -38,16 +42,16 @@ export const Chart = () => {
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">
-            24 Hour Activity
+            30 Day Activity
           </h2>
-          <p className="text-sm text-slate-600">Views over the last 24 hours</p>
+          <p className="text-sm text-slate-600">Logins over the last 30 days</p>
         </div>
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
-                dataKey="hour"
+                dataKey="date"
                 stroke="#64748b"
                 tick={{ fill: '#64748b' }}
                 axisLine={{ stroke: '#e2e8f0' }}

@@ -1,17 +1,19 @@
 'use client';
+
 import React from 'react';
 import { SessionProvider } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { Button } from '../components/ui/button';
 import { FileText } from 'lucide-react';
+import Logo from '@/public/logo';
 
 const Stats = dynamic(
   () => import('../components/dashboards/stats').then((mod) => mod.Stats),
   { ssr: false }
 );
+
 const Chart = dynamic(
   () => import('../components/dashboards/chart').then((mod) => mod.Chart),
   { ssr: false }
@@ -32,12 +34,7 @@ const Dashboard = () => {
                 className="text-2xl font-medium text-primary"
                 onClick={() => router.push('/')}
               >
-                <Image
-                  src="/devresume.svg"
-                  alt="DevResume Logo"
-                  width={250}
-                  height={60}
-                />
+                <Logo className="w-[170px]" />
               </button>
               <Button
                 onClick={() => router.push('/builder')}
