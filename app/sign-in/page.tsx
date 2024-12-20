@@ -6,6 +6,7 @@ import { Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { signIn } from 'next-auth/react';
+import Logo from '@/public/logo';
 
 const SignIn = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -58,12 +59,7 @@ const SignIn = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
         <header className="py-6 flex items-center justify-between">
-          <h1
-            onClick={() => router.push('/')}
-            className="text-2xl font-medium cursor-pointer hover:text-white/90 transition-colors"
-          >
-            ResumeBOT
-          </h1>
+          <Logo className="w-[170px]" />
         </header>
         <div className="max-w-md mx-auto mt-20 p-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
           <h2 className="text-3xl font-bold text-center mb-8">Welcome Back</h2>
