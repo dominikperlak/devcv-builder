@@ -1,25 +1,48 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResumePreview } from '@/app/components/resume/resumepreview';
-import { decodeShareData } from '@/app/utilis/shareutilis';
+import { getSharedResume } from '@/app/utilis/shareutilis';
 import { useParams } from 'next/navigation';
+import { ResumeData } from '@/types/resume';
 
 export const ShareContent = () => {
   const params = useParams() as { shareId?: string };
-
-  const decodedData = useMemo(() => {
-    if (!params?.shareId) return null;
-    return decodeShareData(params.shareId);
-  }, [params?.shareId]);
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (decodedData?.pdfBase64) {
-      sessionStorage.setItem('resumePDF', decodedData.pdfBase64);
-    }
-  }, [decodedData]);
+    const fetchResume = async () => {
+      if (!params?.shareId) {
+        setLoading(false);
+        return;
+      }
 
-  if (!decodedData) {
+      try {
+        const data: ResumeData | null = await getSharedResume(params.shareId);
+        setResumeData(data);
+      } catch (error) {
+        console.error('Error fetching resume:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResume();
+  }, [params?.shareId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading resume...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!resumeData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -37,7 +60,7 @@ export const ShareContent = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="container max-w-4xl mx-auto">
-        <ResumePreview formData={decodedData.formData} />
+        <ResumePreview formData={resumeData} />
       </div>
     </div>
   );

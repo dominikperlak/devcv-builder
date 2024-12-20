@@ -15,10 +15,11 @@ import { ImportSection } from './importsection';
 import { WorkExperienceSection } from './workexperience';
 import { EducationSection } from './educationsection';
 import { ProjectsSection } from './projectsection';
+import { SkillsSection } from './skillssection';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
 
-type Style = 'modern' | 'classic' | 'minimal' | 'creative';
+type ResumeStyle = 'modern' | 'classic' | 'minimal' | 'creative';
 
 export const ResumeForm = ({
   onUpdate,
@@ -34,9 +35,11 @@ export const ResumeForm = ({
       summary: '',
       email: '',
       github: '',
+      linkedin: '',
       workExperience: [],
       education: [],
       projects: [],
+      skills: [],
       style: 'modern',
     },
   });
@@ -47,8 +50,12 @@ export const ResumeForm = ({
     onUpdate(formData);
   }, [formData, onUpdate]);
 
-  const handleStyleChange = (value: Style) => {
+  const handleStyleChange = (value: ResumeStyle) => {
     setValue('style', value);
+    toast({
+      title: 'Style Updated',
+      description: `Resume style changed to ${value}`,
+    });
   };
 
   return (
@@ -71,6 +78,7 @@ export const ResumeForm = ({
         <ImportSection setValue={setValue} />
         <PersonalInfoSection register={register} setValue={setValue} />
         <ContactSection register={register} />
+        <SkillsSection register={register} control={control} />
         <WorkExperienceSection
           register={register}
           control={control}

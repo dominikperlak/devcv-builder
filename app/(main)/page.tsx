@@ -14,7 +14,7 @@ const Landing = () => {
           <div className="flex gap-4">
             <Button
               variant="ghost"
-              className="text-white hover:text-/80"
+              className="bg-white text-slate-900 hover:bg-white/90"
               onClick={() => router.push('/sign-in')}
             >
               Sign In
@@ -35,7 +35,7 @@ const Landing = () => {
             </h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               Create a standout resume that showcases your technical expertise.
-              Import your experience directly from GitHub and other platforms.
+              Import your experience directly from GitHub.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

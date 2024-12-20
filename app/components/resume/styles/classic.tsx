@@ -6,10 +6,16 @@ interface ClassicStyleProps {
   children: React.ReactNode;
 }
 
-export const ClassicStyle = ({ data, children }: ClassicStyleProps) => {
+export const ClassicStyle: React.FC<ClassicStyleProps> = ({ children }) => {
   return (
-    <div className="space-y-6 font-serif bg-gradient-to-br from-amber-50 to-orange-50 p-8 rounded-xl shadow-sm">
-      {children}
+    <div className="space-y-6 font-serif bg-[#F9F6F0] p-8 rounded-xl border border-amber-100">
+      {React.Children.map(children, (child, index) => (
+        <div
+          className={`py-4 ${index % 2 === 0 ? 'bg-amber-50/50 rounded-lg' : ''}`}
+        >
+          {child}
+        </div>
+      ))}
     </div>
   );
 };

@@ -9,8 +9,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-import { Plus, Trash2, Briefcase, Sparkles } from 'lucide-react';
-import { enhanceWithAI } from '@/app/utilis/openai';
+import { Plus, Trash2, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
 
@@ -30,37 +29,6 @@ export const WorkExperienceSection = ({
     name: 'workExperience',
   });
   const { toast } = useToast();
-  const [enhancingIndex, setEnhancingIndex] = React.useState<number | null>(
-    null
-  );
-
-  const handleEnhanceWithAI = async (index: number) => {
-    try {
-      setEnhancingIndex(index);
-      const currentDescription =
-        (document.getElementById(`description-${index}`) as HTMLTextAreaElement)
-          ?.value || '';
-      const enhancedDescription = await enhanceWithAI(
-        currentDescription,
-        'experience'
-      );
-      setValue(`workExperience.${index}.description`, enhancedDescription);
-
-      toast({
-        title: 'Success',
-        description: 'Your work experience has been enhanced with AI!',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description:
-          'Failed to enhance description. Please check the API configuration.',
-        variant: 'destructive',
-      });
-    } finally {
-      setEnhancingIndex(null);
-    }
-  };
 
   return (
     <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
@@ -134,19 +102,7 @@ export const WorkExperienceSection = ({
             </Button>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Description</Label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => handleEnhanceWithAI(index)}
-                disabled={enhancingIndex === index}
-                className="h-8 w-8"
-              >
-                <Sparkles className="h-4 w-4" />
-              </Button>
-            </div>
+            <Label>Description</Label>
             <Textarea
               id={`description-${index}`}
               {...register(`workExperience.${index}.description`)}

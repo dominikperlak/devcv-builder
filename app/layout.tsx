@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: 'DevResume',
   description:
-    'Create a standout resume that showcases your technical expertise. Import your experience directly from GitHub and other platforms.',
+    'Create a standout resume that showcases your technical expertise. Import your experience directly from GitHub.',
 };
 
 export default function RootLayout({
