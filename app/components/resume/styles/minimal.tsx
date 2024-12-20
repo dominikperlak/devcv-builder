@@ -6,10 +6,22 @@ interface MinimalStyleProps {
   children: React.ReactNode;
 }
 
-export const MinimalStyle = ({ data, children }: MinimalStyleProps) => {
+const stylesMap: Record<number, string> = {
+  0: 'border-b border-slate-200 pb-6',
+  1: 'text-slate-700',
+};
+
+export const MinimalStyle: React.FC<MinimalStyleProps> = ({ children }) => {
   return (
-    <div className="space-y-8 font-sans bg-gradient-to-br from-neutral-50 to-stone-50 p-8 rounded-xl shadow-sm">
-      {children}
+    <div className="space-y-8 font-sans bg-white">
+      {React.Children.map(children, (child, index) => (
+        <div
+          key={index}
+          className={`space-y-4 ${stylesMap[index] || 'text-slate-800'}`}
+        >
+          {child}
+        </div>
+      ))}
     </div>
   );
 };

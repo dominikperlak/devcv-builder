@@ -72,6 +72,28 @@ export const ResumeContent = ({ sections, formData }: ResumeContentProps) => {
                   <p className="text-sm text-slate-600">{formData?.summary}</p>
                 </div>
               )}
+              {section === 'Skills' && formData?.skills?.length > 0 && (
+                <div className="space-y-4">
+                  <h2 className="text-lg font-medium border-b border-slate-200 pb-1 text-slate-900">
+                    Skills
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {formData.skills.map((skill, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-sm font-medium text-slate-900">
+                          {skill.name}
+                        </span>
+                        <span className="text-sm text-slate-600">
+                          {skill.level}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {section === 'Work Experience' &&
                 formData?.workExperience?.length > 0 && (
                   <div className="space-y-4">

@@ -1,7 +1,7 @@
 'use client';
 
 import { v4 as uuidv4 } from 'uuid';
-import { generatePDFBlob, blobToBase64 } from './pdfUtilis';
+import { generatePDFBlob, blobToBase64 } from './pdfutilis';
 
 interface ShareData {
   id: string;

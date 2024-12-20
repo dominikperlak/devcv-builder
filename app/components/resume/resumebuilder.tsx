@@ -5,6 +5,7 @@ import { ResumePreview } from './resumepreview';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { LayoutDashboard } from 'lucide-react';
+import Image from 'next/image';
 
 const Builder = () => {
   const router = useRouter();
@@ -26,7 +27,12 @@ const Builder = () => {
             onClick={() => router.push('/')}
             className="text-2xl font-medium text-slate-900 hover:text-slate-700 transition-colors"
           >
-            DevResume
+            <Image
+              src="/devresume.svg"
+              alt="DevResume Logo"
+              width={250}
+              height={60}
+            />
           </button>
           <Button
             onClick={() => router.push('/dashboard')}

@@ -1,4 +1,5 @@
 export interface ResumeFormData {
+  name: string;
   firstName: string;
   lastName: string;
   title: string;
@@ -7,6 +8,10 @@ export interface ResumeFormData {
   linkedin?: string;
   github?: string;
   style: 'modern' | 'classic' | 'minimal' | 'creative';
+  skills: Array<{
+    name: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+  }>;
   workExperience: Array<{
     position: string;
     company: string;

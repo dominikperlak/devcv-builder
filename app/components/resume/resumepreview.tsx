@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Share2, Download } from 'lucide-react';
-import { generatePDF } from '@/app/utilis/pdfUtilis';
+import { generatePDF } from '@/app/utilis/pdfutilis';
 import { useToast } from '@/hooks/use-toast';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { generateShareLink } from '@/app/utilis/shareutilis';
@@ -22,6 +22,7 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
   const [sections, setSections] = useState([
     'Contact',
     'Summary',
+    'Skills',
     'Work Experience',
     'Education',
     'Projects',
@@ -30,12 +31,28 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
   useEffect(() => {
     const generateLink = async () => {
       if (shareModalOpen) {
-        const link = await generateShareLink(formData);
+        const { link, error } = await generateShareLink(formData);
+
+        if (error) {
+          console.error('Error generating share link:', error);
+
+          toast({
+            title: 'Error',
+            description: error,
+            variant: 'destructive',
+          });
+
+          setShareModalOpen(false);
+
+          return;
+        }
+
         setShareLink(link);
       }
     };
+
     generateLink();
-  }, [shareModalOpen, formData]);
+  }, [shareModalOpen, formData, toast]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
@@ -44,6 +61,7 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
       setSections((prevSections) => {
         const oldIndex = prevSections.indexOf(active.id);
         const newIndex = prevSections.indexOf(over.id);
+
         return arrayMove(prevSections, oldIndex, newIndex);
       });
     }
@@ -51,6 +69,7 @@ export const ResumePreview = ({ formData }: { formData?: any }) => {
 
   const handleDownload = async () => {
     const success = await generatePDF('resume-preview', 'my-resume.pdf');
+
     if (success) {
       toast({
         title: 'Success',
