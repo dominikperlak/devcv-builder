@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Linkedin, Github } from 'lucide-react';
+import { Mail, Linkedin } from 'lucide-react';
 import SortableItem from './sortableitem';
 import { ResumeStyle } from './styles';
 import { ResumeFormData } from '@/types/resume';
@@ -50,9 +50,7 @@ export const ResumeContent = ({ sections, formData }: ResumeContentProps) => {
                         {formData?.firstName} {formData?.lastName}
                       </h1>
                       <p className="text-slate-600">{formData?.title}</p>
-                      {(formData?.email ||
-                        formData?.linkedin ||
-                        formData?.github) && (
+                      {(formData?.email || formData?.linkedin) && (
                         <div className="flex justify-center gap-4 text-sm text-slate-600">
                           {formData?.email && (
                             <div className="flex items-center gap-1">
@@ -75,19 +73,6 @@ export const ResumeContent = ({ sections, formData }: ResumeContentProps) => {
                                 className="hover:text-blue-600"
                               >
                                 LinkedIn
-                              </a>
-                            </div>
-                          )}
-                          {formData?.github && (
-                            <div className="flex items-center gap-1">
-                              <Github className="w-4 h-4" />
-                              <a
-                                href={formData.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:text-blue-600"
-                              >
-                                GitHub
                               </a>
                             </div>
                           )}

@@ -1,13 +1,22 @@
 import React from 'react';
-import { UseFormRegister, useFieldArray } from 'react-hook-form';
+import {
+  UseFormRegister,
+  useFieldArray,
+  Control,
+  UseFormSetValue,
+} from 'react-hook-form';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Plus, Trash2, GraduationCap } from 'lucide-react';
+import { ResumeFormData } from '@/types/resume';
+
 interface EducationProps {
-  register: UseFormRegister<any>;
-  control: any;
+  register: UseFormRegister<ResumeFormData>;
+  control: Control<ResumeFormData>;
+  setValue: UseFormSetValue<ResumeFormData>;
 }
+
 export const EducationSection = ({ register, control }: EducationProps) => {
   const { fields, append, remove } = useFieldArray({
     control,
