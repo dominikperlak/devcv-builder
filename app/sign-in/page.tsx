@@ -62,7 +62,7 @@ const SignIn = () => {
             onClick={() => router.push('/')}
             className="text-2xl font-medium cursor-pointer hover:text-white/90 transition-colors"
           >
-            DevResume
+            ResumeBOT
           </h1>
         </header>
         <div className="max-w-md mx-auto mt-20 p-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
