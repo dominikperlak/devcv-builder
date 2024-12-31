@@ -7,16 +7,20 @@ import { Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import LogoWhite from '@/public/logo-white';
+
 const SignUp = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
   if (!isMounted) {
     return null;
   }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
@@ -24,6 +28,7 @@ const SignUp = () => {
       description: 'Email/password registration will be available soon!',
     });
   };
+
   const handleGithubSignUp = async () => {
     try {
       toast({
@@ -38,6 +43,7 @@ const SignUp = () => {
       });
     }
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
@@ -164,4 +170,5 @@ const SignUp = () => {
     </div>
   );
 };
+
 export default SignUp;

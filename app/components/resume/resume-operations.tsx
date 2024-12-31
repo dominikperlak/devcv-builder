@@ -30,7 +30,9 @@ export const useResumeOperations = () => {
         updated_at: new Date().toISOString(),
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       toast({
         title: 'Resume saved',
@@ -57,7 +59,9 @@ export const useResumeOperations = () => {
 
       const { error } = await supabase.from('cv_store').delete().eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       toast({
         title: 'Resume deleted',

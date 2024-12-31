@@ -121,7 +121,9 @@ const Builder = () => {
         updated_at: new Date().toISOString(),
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       await loadResumes();
 
