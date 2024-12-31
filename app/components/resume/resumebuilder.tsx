@@ -51,7 +51,9 @@ const Builder = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       const transformedData =
         data?.map((item: any) => ({
