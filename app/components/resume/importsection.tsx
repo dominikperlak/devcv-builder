@@ -50,7 +50,6 @@ export const ImportSection = ({ setValue }: ImportSectionProps) => {
           'status' in readmeError &&
           readmeError.status === 404
         ) {
-          console.log(`No README found for repository: ${repo.name}`);
         } else {
           console.error('Error fetching README:', readmeError);
         }
@@ -59,7 +58,6 @@ export const ImportSection = ({ setValue }: ImportSectionProps) => {
 
       return '';
     } catch (error) {
-      console.log('Error getting project description:', error);
       return '';
     }
   };
@@ -118,7 +116,7 @@ export const ImportSection = ({ setValue }: ImportSectionProps) => {
         repos.map(async (repo) => {
           const description = await getProjectDescription(octokit, repo);
           return {
-            id: repo.id.toString(),
+            id: repo.id,
             name: repo.name,
             description: description,
             technologies: repo.language || 'Various',

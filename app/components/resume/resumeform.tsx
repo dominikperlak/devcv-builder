@@ -14,53 +14,63 @@ import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Button } from '@/app/components/ui/button';
 import {
-  Plus,
-  Trash2,
   FileText,
   Briefcase,
   GraduationCap,
   Github,
   Wrench,
+  Trash2,
+  Plus,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
+import { SkillsSection } from './skillssection';
 import { ImportSection } from './importsection';
-
-type ResumeStyle = 'modern' | 'classic' | 'minimal' | 'creative';
 
 export const ResumeForm = ({
   onUpdate,
+  initialData,
 }: {
   onUpdate: (data: ResumeFormData) => void;
+  initialData?: ResumeFormData;
 }) => {
   const { toast } = useToast();
-  const { register, control, watch, setValue } = useForm<ResumeFormData>({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      title: '',
-      summary: '',
-      email: '',
-      github: '',
-      linkedin: '',
-      workExperience: [],
-      education: [],
-      projects: [],
-      skills: [],
-      style: 'modern',
-    },
-  });
+  const { register, control, watch, setValue, reset } = useForm<ResumeFormData>(
+    {
+      defaultValues: initialData || {
+        id: crypto.randomUUID(),
+        title: `Resume ${new Date().toLocaleDateString()}`,
+        lastModified: new Date().toISOString(),
+        firstName: '',
+        lastName: '',
+        summary: '',
+        email: '',
+        github: '',
+        linkedin: '',
+        workExperience: [],
+        education: [],
+        projects: [],
+        skills: [],
+        style: 'modern',
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
 
   useEffect(() => {
     const subscription = watch((value) => {
-      console.log('Form data updated:', value);
       onUpdate(value as ResumeFormData);
     });
 
     return () => subscription.unsubscribe();
   }, [watch, onUpdate]);
 
-  const handleStyleChange = (value: ResumeStyle) => {
+  const handleStyleChange = (value: ResumeFormData['style']) => {
     setValue('style', value);
     toast({
       title: 'Style Updated',
@@ -403,7 +413,7 @@ export const ResumeForm = ({
                 setValue('projects', [
                   ...currentProjects,
                   {
-                    id: Date.now().toString(),
+                    id: Date.now(),
                     name: '',
                     description: '',
                     technologies: '',

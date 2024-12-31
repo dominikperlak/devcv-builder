@@ -11,6 +11,14 @@ export const authOptions = {
           scope: 'read:user user:email',
         },
       },
+      profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          image: profile.avatar_url,
+        };
+      },
     }),
   ],
   pages: {
@@ -19,14 +27,17 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) {
+      if (url.startsWith(baseUrl) || url.startsWith(`${baseUrl}/my-resume`)) {
         return url;
       }
       return `${baseUrl}/builder`;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
+      }
+      if (user) {
+        token.id = user.id;
       }
       return token;
     },
@@ -34,6 +45,10 @@ export const authOptions = {
       if (token?.accessToken) {
         session.accessToken = token.accessToken;
       }
+      if (token?.id) {
+        session.user.id = token.id;
+      }
+      session.isAuthenticated = true;
       return session;
     },
   },

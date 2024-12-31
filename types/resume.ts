@@ -1,11 +1,14 @@
 export interface ResumeFormData {
+  id?: string;
+  title: string;
+  lastModified?: string;
   firstName: string;
   lastName: string;
-  title: string;
+  jobTitle: string;
   summary: string;
   email: string;
-  linkedin?: string;
   github?: string;
+  linkedin?: string;
   workExperience: Array<{
     position: string;
     company: string;
@@ -20,7 +23,7 @@ export interface ResumeFormData {
     graduationDate: string;
   }>;
   projects: Array<{
-    id: string;
+    id: number;
     name: string;
     description: string;
     technologies: string;

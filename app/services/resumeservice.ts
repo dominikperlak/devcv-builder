@@ -1,20 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { ResumeFormData } from '@/types/resume';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const getResumes = async () => {
   try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      return { error: 'Please sign in to view your resumes', data: [] };
+    }
+
     const { data, error } = await supabase
       .from('cv_store')
       .select('*')
+      .eq('user_id', session.user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -28,7 +28,6 @@ export const getResumes = async () => {
       lastModified: item.updated_at,
     }));
 
-    console.log('Fetched resumes:', transformedData);
     return { data: transformedData };
   } catch (error) {
     console.error('Error in getResumes:', error);
@@ -38,10 +37,27 @@ export const getResumes = async () => {
 
 export const saveResume = async (formData: ResumeFormData) => {
   try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      return { error: 'Please sign in to save your resume' };
+    }
+    const { count } = await supabase
+      .from('cv_store')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', session.user.id);
+
+    if (count && count >= 5) {
+      return { error: 'You have reached the maximum limit of 5 CVs' };
+    }
+
     const { data, error } = await supabase
       .from('cv_store')
       .upsert({
         id: formData.id,
+        user_id: session.user.id,
         resume_data: formData,
         updated_at: new Date().toISOString(),
       })
@@ -53,7 +69,6 @@ export const saveResume = async (formData: ResumeFormData) => {
       return { error: error.message };
     }
 
-    console.log('Resume saved successfully:', data);
     return { data };
   } catch (error) {
     console.error('Error in saveResume:', error);
@@ -63,14 +78,25 @@ export const saveResume = async (formData: ResumeFormData) => {
 
 export const deleteResume = async (id: string) => {
   try {
-    const { error } = await supabase.from('cv_store').delete().eq('id', id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      return { error: 'Please sign in to delete your resume' };
+    }
+
+    const { error } = await supabase
+      .from('cv_store')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', session.user.id);
 
     if (error) {
       console.error('Error deleting resume:', error);
       return { error: error.message };
     }
 
-    console.log('Resume deleted successfully');
     return { success: true };
   } catch (error) {
     console.error('Error in deleteResume:', error);

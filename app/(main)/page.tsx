@@ -2,6 +2,7 @@
 import { Button } from '../components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Github, ArrowRight, Download } from 'lucide-react';
+import LogoWhite from '@/public/logo-white';
 import Logo from '@/public/logo';
 
 const Landing = () => {
@@ -11,7 +12,7 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
         <header className="py-6 flex items-center justify-between">
-          <Logo className="w-[170px] text-blue-400" />
+          <LogoWhite className="w-[170px]" />
           <div className="flex gap-4">
             <Button
               variant="ghost"
@@ -21,7 +22,7 @@ const Landing = () => {
               Sign In
             </Button>
             <Button
-              onClick={() => router.push('/builder')}
+              onClick={() => router.push('/sign-up')}
               className="bg-white text-slate-900 hover:bg-white/90"
             >
               Get Started
@@ -41,7 +42,7 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                onClick={() => router.push('/builder')}
+                onClick={() => router.push('/my-resume')}
                 className="bg-white text-slate-900 hover:bg-white/90 text-lg group"
               >
                 Create Resume
