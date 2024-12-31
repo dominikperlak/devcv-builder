@@ -18,9 +18,13 @@ import { ResumeFormData } from '@/types/resume';
 
 interface ResumePreviewProps {
   formData: ResumeFormData;
+  disableDragAndDrop?: boolean;
 }
 
-export const ResumePreview = ({ formData }: ResumePreviewProps) => {
+export const ResumePreview = ({
+  formData,
+  disableDragAndDrop,
+}: ResumePreviewProps) => {
   const { toast } = useToast();
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareLink, setShareLink] = useState('');
@@ -110,14 +114,18 @@ export const ResumePreview = ({ formData }: ResumePreviewProps) => {
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div
           id="resume-preview"
-          className="p-8 min-h-[842px] bg-slate-50 rounded-b-2xl"
+          className={`p-8 min-h-[842px] bg-slate-50 rounded-b-2xl ${disableDragAndDrop ? 'pointer-events-none' : ''}`}
         >
-          <SortableContext
-            items={sections}
-            strategy={verticalListSortingStrategy}
-          >
+          {!disableDragAndDrop ? (
+            <SortableContext
+              items={sections}
+              strategy={verticalListSortingStrategy}
+            >
+              <ResumeContent sections={sections} formData={formData} />
+            </SortableContext>
+          ) : (
             <ResumeContent sections={sections} formData={formData} />
-          </SortableContext>
+          )}
         </div>
       </DndContext>
       <ShareModal
