@@ -5,16 +5,10 @@ import { Button } from '../ui/button';
 import { Share2, Download } from 'lucide-react';
 import { generatePDF } from '@/app/utilis/pdfutilis';
 import { useToast } from '@/hooks/use-toast';
-import { DndContext, closestCenter } from '@dnd-kit/core';
 import { generateShareLink } from '@/app/utilis/shareutilis';
 import { ShareModal } from '@/app/components/share/sharemodal';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from '@dnd-kit/sortable';
-import { ResumeContent } from './resumecontent';
 import { ResumeFormData } from '@/types/resume';
+import { DraggableResumeContent } from './draggableresumecontent';
 
 interface ResumePreviewProps {
   formData: ResumeFormData;
@@ -36,18 +30,6 @@ export const ResumePreview = ({
     'Education',
     'Projects',
   ]);
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setSections((prevSections) => {
-        const oldIndex = prevSections.indexOf(active.id);
-        const newIndex = prevSections.indexOf(over.id);
-        return arrayMove(prevSections, oldIndex, newIndex);
-      });
-    }
-  };
 
   const handleDownload = async () => {
     const success = await generatePDF('resume-preview', 'my-resume.pdf');
@@ -111,23 +93,12 @@ export const ResumePreview = ({
           </Button>
         </div>
       </div>
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div
-          id="resume-preview"
-          className={`p-8 min-h-[842px] bg-slate-50 rounded-b-2xl ${disableDragAndDrop ? 'pointer-events-none' : ''}`}
-        >
-          {!disableDragAndDrop ? (
-            <SortableContext
-              items={sections}
-              strategy={verticalListSortingStrategy}
-            >
-              <ResumeContent sections={sections} formData={formData} />
-            </SortableContext>
-          ) : (
-            <ResumeContent sections={sections} formData={formData} />
-          )}
-        </div>
-      </DndContext>
+      <DraggableResumeContent
+        sections={sections}
+        formData={formData}
+        onSectionsChange={setSections}
+        disableDragAndDrop={disableDragAndDrop}
+      />
       <ShareModal
         open={shareModalOpen}
         onOpenChange={setShareModalOpen}

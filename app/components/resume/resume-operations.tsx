@@ -13,12 +13,12 @@ export const useResumeOperations = () => {
   const isAuthenticated = status === 'authenticated';
 
   const handleFormUpdate = async (data: ResumeFormData) => {
-    try {
-      if (!isAuthenticated) {
-        router.push('/sign-in');
-        return;
-      }
+    if (!isAuthenticated || !session?.user?.uuid) {
+      router.push('/sign-in');
+      return;
+    }
 
+    try {
       const updatedData = {
         ...data,
         lastModified: new Date().toISOString(),
@@ -26,12 +26,19 @@ export const useResumeOperations = () => {
 
       const { error } = await supabase.from('cv_store').upsert({
         id: updatedData.id,
+        user_id: session.user.uuid,
         resume_data: updatedData,
         updated_at: new Date().toISOString(),
       });
 
       if (error) {
-        throw error;
+        console.error('Error saving resume:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to save resume. Please try again.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       toast({
@@ -51,16 +58,26 @@ export const useResumeOperations = () => {
   };
 
   const handleDeleteResume = async (id: string) => {
-    try {
-      if (!isAuthenticated) {
-        router.push('/sign-in');
-        return;
-      }
+    if (!isAuthenticated || !session?.user?.uuid) {
+      router.push('/sign-in');
+      return;
+    }
 
-      const { error } = await supabase.from('cv_store').delete().eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('cv_store')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', session.user.uuid);
 
       if (error) {
-        throw error;
+        console.error('Error deleting resume:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to delete resume. Please try again.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       toast({

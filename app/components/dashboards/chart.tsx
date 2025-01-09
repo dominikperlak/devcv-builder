@@ -20,7 +20,7 @@ export const Chart = () => {
     queryKey: ['cv-chart-data'],
     queryFn: fetchChartData,
     refetchInterval: 30000,
-    initialData: Array.from({ length: 30 }, (_, i) => ({
+    initialData: Array.from({ length: 30 }, () => ({
       date: '',
       views: 0,
     })),
