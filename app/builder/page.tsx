@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SessionProvider } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
@@ -14,6 +14,12 @@ const BuilderContent = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  useEffect(() => {
+    if (status === 'authenticated' && !session) {
+      router.push('/sign-in');
+    }
+  }, [status, session, router]);
+
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -26,7 +32,6 @@ const BuilderContent = () => {
   }
 
   if (!session) {
-    router.push('/sign-in');
     return null;
   }
 

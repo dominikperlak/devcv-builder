@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../components/ui/button';
@@ -7,35 +8,23 @@ import { ResumeList } from '../components/resume/resumelist';
 import Logo from '@/public/logo';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { useSession } from 'next-auth/react';
 
 const RESUME_LIMIT = 5;
-
-const getSupabaseClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
-    console.error('Missing Supabase environment variables');
-    return null;
-  }
-
-  return createClient(supabaseUrl!, supabaseAnonKey!);
-};
-
-const supabase = getSupabaseClient();
 
 const MyResumes = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
   const [resumes, setResumes] = useState<ResumeFormData[]>([]);
   const [limitExceeded, setLimitExceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResumes = async () => {
-      if (!supabase) {
-        setError('Database connection not available');
+      if (!session?.user?.uuid) {
+        router.push('/sign-in');
         return;
       }
 
@@ -43,6 +32,7 @@ const MyResumes = () => {
         const { data, error } = await supabase
           .from('cv_store')
           .select('*')
+          .eq('user_id', session.user.uuid)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -69,15 +59,11 @@ const MyResumes = () => {
     };
 
     fetchResumes();
-  }, [toast]);
+  }, [session, toast, router]);
 
   const handleCreateNewResume = async () => {
-    if (!supabase) {
-      toast({
-        title: 'Error',
-        description: 'Database connection not available',
-        variant: 'destructive',
-      });
+    if (!session?.user?.uuid) {
+      router.push('/sign-in');
       return;
     }
 
@@ -112,6 +98,7 @@ const MyResumes = () => {
     try {
       const { error } = await supabase.from('cv_store').insert({
         id: newResume.id,
+        user_id: session.user.uuid,
         resume_data: newResume,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -140,17 +127,18 @@ const MyResumes = () => {
   };
 
   const handleDeleteResume = async (id: string) => {
-    if (!supabase) {
-      toast({
-        title: 'Error',
-        description: 'Database connection not available',
-        variant: 'destructive',
-      });
+    if (!session?.user?.uuid) {
+      router.push('/sign-in');
       return;
     }
 
     try {
-      const { error } = await supabase.from('cv_store').delete().eq('id', id);
+      const { error } = await supabase
+        .from('cv_store')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', session.user.uuid);
+
       if (error) throw error;
 
       setResumes((prevResumes) =>

@@ -7,6 +7,7 @@ import { Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import LogoWhite from '@/public/logo-white';
+import { signIn } from 'next-auth/react';
 
 const SignUp = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -31,10 +32,22 @@ const SignUp = () => {
 
   const handleGithubSignUp = async () => {
     try {
-      toast({
-        title: 'Redirecting to GitHub',
-        description: 'Please complete the registration process.',
+      const result = await signIn('github', {
+        callbackUrl: process.env.NEXT_PUBLIC_GITHUB_CALLBACK_URL,
       });
+
+      if (result?.error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to initialize GitHub sign up.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Redirecting to GitHub',
+          description: 'Please complete the registration process.',
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error',

@@ -136,7 +136,7 @@ const SignIn = () => {
           <p className="mt-6 text-center text-sm text-slate-400">
             Don&apos;t have an account?{' '}
             <button
-              onClick={() => router.push('/signup')}
+              onClick={() => router.push('/sign-up')}
               className="text-blue-400 hover:text-blue-300"
             >
               Sign up
