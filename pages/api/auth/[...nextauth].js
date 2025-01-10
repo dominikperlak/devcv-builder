@@ -79,6 +79,7 @@ export const authOptions = {
             .single();
 
           if (fetchError && fetchError.code !== 'PGRST116') {
+            console.error('Error fetching user:', fetchError);
             return false;
           }
 
@@ -93,13 +94,15 @@ export const authOptions = {
               ]);
 
             if (insertError) {
+              console.error('Error inserting user:', insertError);
               return false;
             }
           }
 
           user.uuid = userUUID;
           return true;
-        } catch {
+        } catch (error) {
+          console.error('Error in signIn callback:', error);
           return false;
         }
       }
@@ -144,7 +147,8 @@ export const authOptions = {
           .single();
 
         session.isAuthenticated = !!user && !error;
-      } catch {
+      } catch (error) {
+        console.error('Error verifying session:', error);
         session.isAuthenticated = false;
       }
 
@@ -153,12 +157,13 @@ export const authOptions = {
   },
   events: {
     async error(message) {
+      console.error('NextAuth Error:', message);
       if (message.error) {
-        console.error('NextAuth Error:', message.error);
+        console.error('Error message:', message.error);
       }
     },
   },
-  debug: false,
+  debug: true,
 };
 
 export default NextAuth(authOptions);
