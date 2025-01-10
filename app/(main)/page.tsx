@@ -3,7 +3,6 @@ import { Button } from '../components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Github, ArrowRight, Download } from 'lucide-react';
 import LogoWhite from '@/public/logo-white';
-import Logo from '@/public/logo';
 
 const Landing = () => {
   const router = useRouter();

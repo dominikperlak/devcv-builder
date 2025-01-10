@@ -60,7 +60,7 @@ export const ShareContent = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="container max-w-4xl mx-auto">
-        <ResumePreview formData={resumeData} />
+        <ResumePreview formData={resumeData} disableDragAndDrop={true} />
       </div>
     </div>
   );

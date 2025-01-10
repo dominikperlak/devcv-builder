@@ -5,10 +5,12 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const path = req.nextUrl.pathname;
 
+  if (path.startsWith('/api/auth/callback')) {
+    return NextResponse.next();
+  }
 
-
-  if (path === '/sign-in' && token) {
-    return NextResponse.redirect(new URL('/builder', req.url));
+  if ((path === '/sign-in' || path === '/sign-up') && token) {
+    return NextResponse.redirect(new URL('/my-resume', req.url));
   }
 
   const protectedRoutes = [
@@ -32,5 +34,6 @@ export const config = {
     '/builder/:path*',
     '/my-resume/:path*',
     '/sign-in',
+    '/sign-up',
   ],
 };
