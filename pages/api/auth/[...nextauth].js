@@ -49,7 +49,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true, // Ustawione na `true` bez względu na środowisko
+        secure: true,
       },
     },
     callbackUrl: {
@@ -57,7 +57,7 @@ export const authOptions = {
       options: {
         sameSite: 'lax',
         path: '/',
-        secure: true, // Ustawione na `true` bez względu na środowisko
+        secure: true,
       },
     },
     csrfToken: {
@@ -66,7 +66,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true, // Ustawione na `true` bez względu na środowisko
+        secure: true,
       },
     },
   },
