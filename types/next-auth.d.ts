@@ -13,10 +13,4 @@ declare module 'next-auth' {
       uuid?: string;
     };
   }
-
-  interface JWT {
-    accessToken?: string;
-    id?: string;
-    uuid?: string;
-  }
 }
