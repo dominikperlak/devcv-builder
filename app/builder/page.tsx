@@ -1,24 +1,30 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { SessionProvider } from 'next-auth/react';
+import React from 'react';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
 const Builder = dynamic(() => import('../components/resume/resumebuilder'), {
   ssr: false,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-slate-600">Loading resume builder...</p>
+      </div>
+    </div>
+  ),
 });
 
 const BuilderContent = () => {
-  const { data: session, status } = useSession();
   const router = useRouter();
-
-  useEffect(() => {
-    if (status === 'authenticated' && !session) {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
       router.push('/sign-in');
-    }
-  }, [status, session, router]);
+    },
+  });
 
   if (status === 'loading') {
     return (
@@ -31,23 +37,11 @@ const BuilderContent = () => {
     );
   }
 
-  if (!session) {
-    return null;
-  }
-
-  return (
-    <div>
-      <Builder />
-    </div>
-  );
+  return <Builder />;
 };
 
 const BuilderPage = () => {
-  return (
-    <SessionProvider>
-      <BuilderContent />
-    </SessionProvider>
-  );
+  return <BuilderContent />;
 };
 
 export default BuilderPage;
