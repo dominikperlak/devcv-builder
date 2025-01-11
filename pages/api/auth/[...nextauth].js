@@ -10,6 +10,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('Missing NEXTAUTH_SECRET environment variable');
+}
+
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const UUID_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
@@ -45,7 +49,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true, // Ustawione na `true` bez względu na środowisko
       },
     },
     callbackUrl: {
@@ -53,7 +57,7 @@ export const authOptions = {
       options: {
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true, // Ustawione na `true` bez względu na środowisko
       },
     },
     csrfToken: {
@@ -62,7 +66,7 @@ export const authOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true, // Ustawione na `true` bez względu na środowisko
       },
     },
   },
