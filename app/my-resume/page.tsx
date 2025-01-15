@@ -16,26 +16,35 @@ const RESUME_LIMIT = 5;
 const MyResumes = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [resumes, setResumes] = useState<ResumeFormData[]>([]);
   const [limitExceeded, setLimitExceeded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/sign-in');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
     const fetchResumes = async () => {
-      if (!session?.user?.uuid) {
-        router.push('/sign-in');
+      if (!session?.user?.uuid || status !== 'authenticated') {
         return;
       }
 
       try {
-        const { data, error } = await supabase
+        setIsLoading(true);
+        const { data, error: supabaseError } = await supabase
           .from('cv_store')
           .select('*')
           .eq('user_id', session.user.uuid)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (supabaseError) {
+          throw supabaseError;
+        }
 
         const transformedData =
           data?.map((item: any) => ({
@@ -51,15 +60,17 @@ const MyResumes = () => {
           err instanceof Error ? err.message : 'Failed to load resumes';
         setError(message);
         toast({
-          title: 'Error',
+          title: 'Error loading resumes',
           description: message,
           variant: 'destructive',
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchResumes();
-  }, [session, toast, router]);
+  }, [session, status, toast]);
 
   const handleCreateNewResume = async () => {
     if (!session?.user?.uuid) {
@@ -70,33 +81,33 @@ const MyResumes = () => {
     if (resumes.length >= RESUME_LIMIT) {
       setLimitExceeded(true);
       toast({
-        title: 'Limit exceeded',
-        description: `You have exceeded the limit of ${RESUME_LIMIT} resumes.`,
+        title: 'Limit Reached',
+        description: `Maximum limit of ${RESUME_LIMIT} resumes reached. Please delete existing resumes to create new ones.`,
         variant: 'destructive',
       });
       return;
     }
 
-    const newResume: ResumeFormData = {
-      id: crypto.randomUUID(),
-      title: 'Untitled Resume',
-      lastModified: new Date().toISOString(),
-      firstName: '',
-      lastName: '',
-      jobTitle: '',
-      summary: '',
-      email: '',
-      github: '',
-      linkedin: '',
-      workExperience: [],
-      education: [],
-      projects: [],
-      skills: [],
-      style: 'modern',
-    };
-
     try {
-      const { error } = await supabase.from('cv_store').insert({
+      const newResume: ResumeFormData = {
+        id: crypto.randomUUID(),
+        title: 'Untitled Resume',
+        lastModified: new Date().toISOString(),
+        firstName: '',
+        lastName: '',
+        jobTitle: '',
+        summary: '',
+        email: '',
+        github: '',
+        linkedin: '',
+        workExperience: [],
+        education: [],
+        projects: [],
+        skills: [],
+        style: 'modern',
+      };
+
+      const { error: insertError } = await supabase.from('cv_store').insert({
         id: newResume.id,
         user_id: session.user.uuid,
         resume_data: newResume,
@@ -104,14 +115,14 @@ const MyResumes = () => {
         updated_at: new Date().toISOString(),
       });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
       setResumes((prevResumes) => [...prevResumes, newResume]);
       setLimitExceeded(resumes.length + 1 >= RESUME_LIMIT);
 
       toast({
-        title: 'Resume created',
-        description: 'Your new resume has been created successfully.',
+        title: 'Success',
+        description: 'New resume created successfully.',
       });
 
       router.push(`/builder?id=${newResume.id}`);
@@ -133,13 +144,13 @@ const MyResumes = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { error: deleteError } = await supabase
         .from('cv_store')
         .delete()
         .eq('id', id)
         .eq('user_id', session.user.uuid);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
 
       setResumes((prevResumes) =>
         prevResumes.filter((resume) => resume.id !== id)
@@ -147,8 +158,8 @@ const MyResumes = () => {
       setLimitExceeded(resumes.length - 1 >= RESUME_LIMIT);
 
       toast({
-        title: 'Resume deleted',
-        description: 'Your resume has been successfully deleted.',
+        title: 'Success',
+        description: 'Resume deleted successfully.',
       });
     } catch (err) {
       const message =
@@ -161,12 +172,26 @@ const MyResumes = () => {
     }
   };
 
-  if (error) {
+  if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
           <h1 className="text-2xl font-semibold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Try Again
+          </Button>
         </div>
       </div>
     );
@@ -193,6 +218,7 @@ const MyResumes = () => {
           </Button>
         </div>
       </header>
+
       <main className="container py-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
@@ -210,23 +236,47 @@ const MyResumes = () => {
               Create New Resume
             </Button>
           </div>
+
           {limitExceeded && (
             <div
               className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md mb-6"
               role="alert"
             >
-              <p className="text-red-500 text-lg font-semibold">
-                You have exceeded the limit of {RESUME_LIMIT} resumes.
+              <p className="font-semibold">Resume Limit Reached</p>
+              <p>
+                You have reached the maximum limit of {RESUME_LIMIT} resumes.
+                Please delete existing resumes to create new ones.
               </p>
             </div>
           )}
-          <ResumeList
-            showCreateButton={false}
-            onCreateNewResume={handleCreateNewResume}
-            resumes={resumes}
-            limitExceeded={limitExceeded}
-            handleDelete={handleDeleteResume}
-          />
+
+          {resumes.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <h2 className="text-xl font-medium text-gray-600 mb-4">
+                No Resumes Yet
+              </h2>
+              <p className="text-gray-500 mb-6">
+                Create your first resume to get started
+              </p>
+              <Button
+                onClick={handleCreateNewResume}
+                variant="outline"
+                size="lg"
+                className="text-base px-6 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create New Resume
+              </Button>
+            </div>
+          ) : (
+            <ResumeList
+              showCreateButton={false}
+              onCreateNewResume={handleCreateNewResume}
+              resumes={resumes}
+              limitExceeded={limitExceeded}
+              handleDelete={handleDeleteResume}
+            />
+          )}
         </div>
       </main>
     </div>
