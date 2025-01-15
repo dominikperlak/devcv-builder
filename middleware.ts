@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (path === '/sign-in' && token) {
+    if (path === '/sign-up' && token) {
       return NextResponse.redirect(new URL('/my-resume', req.url));
     }
 
@@ -17,6 +17,11 @@ export async function middleware(req: NextRequest) {
     if (isProtectedRoute && !token) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
+
+    if (path === '/sign-in' && token) {
+      return NextResponse.redirect(new URL('/my-resume', req.url));
+    }
+
   } catch (error) {
     console.error('Error in middleware:', error);
     return NextResponse.redirect(new URL('/sign-in', req.url));
