@@ -20,6 +20,7 @@ const MyResumes = () => {
   const [resumes, setResumes] = useState<ResumeFormData[]>([]);
   const [limitExceeded, setLimitExceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchResumes = async () => {
@@ -29,13 +30,29 @@ const MyResumes = () => {
       }
 
       try {
+        console.log('Fetching resumes for user:', session.user.uuid);
+
+        if (
+          !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+          !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        ) {
+          throw new Error(
+            'Supabase configuration is missing. Please check your environment variables.'
+          );
+        }
+
         const { data, error } = await supabase
           .from('cv_store')
           .select('*')
           .eq('user_id', session.user.uuid)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase query error:', error);
+          throw error;
+        }
+
+        console.log('Fetched resumes:', data);
 
         const transformedData =
           data?.map((item: any) => ({
@@ -47,6 +64,7 @@ const MyResumes = () => {
         setResumes(transformedData);
         setLimitExceeded(transformedData.length >= RESUME_LIMIT);
       } catch (err) {
+        console.error('Error in fetchResumes:', err);
         const message =
           err instanceof Error ? err.message : 'Failed to load resumes';
         setError(message);
@@ -55,6 +73,8 @@ const MyResumes = () => {
           description: message,
           variant: 'destructive',
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -163,10 +183,17 @@ const MyResumes = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4">
+        <div className="text-center max-w-md">
           <h1 className="text-2xl font-semibold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Button
+            onClick={() => router.push('/')}
+            variant="outline"
+            className="mx-auto"
+          >
+            Return to Home
+          </Button>
         </div>
       </div>
     );
@@ -226,6 +253,7 @@ const MyResumes = () => {
             resumes={resumes}
             limitExceeded={limitExceeded}
             handleDelete={handleDeleteResume}
+            isLoading={isLoading}
           />
         </div>
       </main>
