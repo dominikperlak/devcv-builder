@@ -15,7 +15,6 @@ if (!process.env.NEXTAUTH_SECRET) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 const UUID_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
 export const authOptions = {
@@ -42,34 +41,6 @@ export const authOptions = {
     signIn: '/sign-in',
   },
   secret: process.env.NEXTAUTH_SECRET,
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: true,
-      },
-    },
-    callbackUrl: {
-      name: `next-auth.callback-url`,
-      options: {
-        sameSite: 'lax',
-        path: '/',
-        secure: true,
-      },
-    },
-    csrfToken: {
-      name: 'next-auth.csrf-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: true,
-      },
-    },
-  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'github') {
@@ -113,10 +84,7 @@ export const authOptions = {
       return true;
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl) || url.startsWith(`${baseUrl}/my-resume`)) {
-        return url;
-      }
-      return `${baseUrl}/builder`;
+      return `${baseUrl}/my-resume`;
     },
     async jwt({ token, user, account }) {
       if (user) {
@@ -162,9 +130,6 @@ export const authOptions = {
   events: {
     async error(message) {
       console.error('NextAuth Error:', message);
-      if (message.error) {
-        console.error('Error message:', message.error);
-      }
     },
   },
   debug: true,

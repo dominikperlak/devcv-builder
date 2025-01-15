@@ -2,24 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const path = req.nextUrl.pathname;
 
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
+    if (path === '/sign-in' && token) {
+      return NextResponse.redirect(new URL('/my-resume', req.url));
+    }
 
-  if (path === '/sign-in' && token) {
-    return NextResponse.redirect(new URL('/my-resume', req.url));
-  }
+    const protectedRoutes = ['/dashboard', '/builder', '/my-resume'];
+    const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
 
-  const protectedRoutes = [
-    '/dashboard',
-    '/builder',
-    '/my-resume'
-  ];
-
-  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route));
-
-  if (isProtectedRoute && !token) {
+    if (isProtectedRoute && !token) {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
+    }
+  } catch (error) {
+    console.error('Error in middleware:', error);
     return NextResponse.redirect(new URL('/sign-in', req.url));
   }
 
