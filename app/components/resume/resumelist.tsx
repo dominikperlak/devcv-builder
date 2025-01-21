@@ -39,7 +39,6 @@ export const ResumeList = ({
   const router = useRouter();
 
   const handleResumeClick = (id: string) => {
-    console.log('Navigating to resume:', id);
     router.push(`/builder?id=${id}`);
   };
 

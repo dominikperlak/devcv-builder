@@ -11,7 +11,7 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
         <header className="py-6 flex items-center justify-between">
-          <LogoWhite className="w-[170px]" />
+          <LogoWhite className="w-[200px]" />
           <div className="flex gap-4">
             <Button
               variant="ghost"
@@ -19,12 +19,6 @@ const Landing = () => {
               onClick={() => router.push('/sign-in')}
             >
               Sign In
-            </Button>
-            <Button
-              onClick={() => router.push('/sign-up')}
-              className="bg-white text-slate-900 hover:bg-white/90"
-            >
-              Get Started
             </Button>
           </div>
         </header>

@@ -28,7 +28,6 @@ export const getResumes = async () => {
       lastModified: item.updated_at,
     }));
 
-    console.log('Fetched resumes:', transformedData);
     return { data: transformedData };
   } catch (error) {
     console.error('Error in getResumes:', error);
@@ -53,7 +52,6 @@ export const saveResume = async (formData: ResumeFormData) => {
       return { error: error.message };
     }
 
-    console.log('Resume saved successfully:', data);
     return { data };
   } catch (error) {
     console.error('Error in saveResume:', error);
@@ -70,7 +68,6 @@ export const deleteResume = async (id: string) => {
       return { error: error.message };
     }
 
-    console.log('Resume deleted successfully');
     return { success: true };
   } catch (error) {
     console.error('Error in deleteResume:', error);

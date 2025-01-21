@@ -5,7 +5,7 @@ import { ResumeForm } from './resumeform';
 import { ResumePreview } from './resumepreview';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '../ui/button';
-import { LayoutDashboard, Save } from 'lucide-react';
+import { FileText, LayoutDashboard, Save } from 'lucide-react';
 import Logo from '@/public/logo';
 import { ResumeFormData } from '@/types/resume';
 import { toast } from 'sonner';
@@ -120,17 +120,28 @@ const Builder = () => {
             onClick={() => router.push('/')}
             className="text-2xl font-medium text-slate-900 hover:text-slate-700 transition-colors"
           >
-            <Logo className="w-[170px]" />
+            <Logo className="w-[200px] ml-2" />
           </button>
-          <Button
-            onClick={() => router.push('/dashboard')}
-            variant="outline"
-            size="lg"
-            className="flex items-center gap-2 hover:bg-slate-50 transition-colors duration-200 text-base px-6"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            Dashboard
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => router.push('/my-resume')}
+              variant="outline"
+              size="lg"
+              className="flex items-center gap-2 hover:bg-slate-50 transition-colors duration-200 text-base px-6"
+            >
+              <FileText className="w-5 h-5" />
+              My Resumes
+            </Button>
+            <Button
+              onClick={() => router.push('/dashboard')}
+              variant="outline"
+              size="lg"
+              className="flex items-center gap-2 hover:bg-slate-50 transition-colors duration-200 text-base px-6"
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              Dashboard
+            </Button>
+          </div>
         </div>
       </header>
       <main className="container py-8">

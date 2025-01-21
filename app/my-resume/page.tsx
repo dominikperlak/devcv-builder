@@ -180,7 +180,7 @@ const MyResumes = () => {
             onClick={() => router.push('/')}
             className="text-2xl font-medium text-slate-900 hover:text-slate-700 transition-colors"
           >
-            <Logo className="w-[170px]" />
+            <Logo className="w-[200px] ml-2" />
           </button>
           <Button
             onClick={() => router.push('/dashboard')}

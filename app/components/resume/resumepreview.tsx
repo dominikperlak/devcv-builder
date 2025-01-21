@@ -32,7 +32,20 @@ export const ResumePreview = ({
   ]);
 
   const handleDownload = async () => {
-    const success = await generatePDF('resume-preview', 'my-resume.pdf');
+    if (!formData.id) {
+      toast({
+        title: 'Error',
+        description: 'Resume ID not found. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const success = await generatePDF(
+      'resume-preview',
+      'my-resume.pdf',
+      formData.id
+    );
     if (success) {
       toast({
         title: 'Success',

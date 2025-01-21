@@ -10,19 +10,26 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { fetchChartData } from '@/app/utilis/dashboard';
-import { ChartDataPoint } from '@/types/dashboard';
+import { ResumeFormData } from '@/types/resume';
 
-export const Chart = () => {
-  const { data: chartData, isLoading } = useQuery<ChartDataPoint[]>({
-    queryKey: ['cv-chart-data'],
-    queryFn: fetchChartData,
+interface ChartProps {
+  resumes: ResumeFormData[];
+  selectedResumeId: string | null;
+}
+
+export const Chart = ({ resumes, selectedResumeId }: ChartProps) => {
+  const { data: chartData, isLoading } = useQuery({
+    queryKey: ['cv-chart-data', selectedResumeId],
+    queryFn: () => fetchChartData(selectedResumeId),
     refetchInterval: 30000,
     initialData: Array.from({ length: 30 }, () => ({
       date: '',
       views: 0,
+      downloads: 0,
     })),
   });
 
@@ -44,7 +51,11 @@ export const Chart = () => {
           <h2 className="text-xl font-semibold text-slate-900">
             30 Day Activity
           </h2>
-          <p className="text-sm text-slate-600">Logins over the last 30 days</p>
+          <p className="text-sm text-slate-600">
+            {selectedResumeId
+              ? `Activity for selected resume over the last 30 days`
+              : `Total activity over the last 30 days`}
+          </p>
         </div>
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -70,13 +81,24 @@ export const Chart = () => {
                 }}
                 labelStyle={{ color: '#1e293b', fontWeight: 600 }}
               />
+              <Legend />
               <Line
+                name="Views"
                 type="monotone"
                 dataKey="views"
                 stroke="#0EA5E9"
                 strokeWidth={2}
                 dot={{ r: 4, fill: '#0EA5E9', strokeWidth: 2 }}
                 activeDot={{ r: 8, fill: '#0EA5E9' }}
+              />
+              <Line
+                name="Downloads"
+                type="monotone"
+                dataKey="downloads"
+                stroke="#22C55E"
+                strokeWidth={2}
+                dot={{ r: 4, fill: '#22C55E', strokeWidth: 2 }}
+                activeDot={{ r: 8, fill: '#22C55E' }}
               />
             </LineChart>
           </ResponsiveContainer>
