@@ -2,27 +2,75 @@ import { supabase } from '@/lib/supabase';
 import { ChartDataPoint, StatsData } from '@/types/dashboard';
 import { format, subDays } from 'date-fns';
 
-export const fetchStats = async (): Promise<StatsData> => {
+const getDownloadCounts = async (
+  resumeId?: string | null,
+  startDate?: Date
+): Promise<number> => {
+  try {
+    let query = supabase.from('pdf_downloads').select('*', { count: 'exact' });
+
+    if (resumeId) {
+      query = query.eq('resume_id', resumeId);
+    }
+
+    if (startDate) {
+      query = query.gte('downloaded_at', startDate.toISOString());
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      console.error('Error counting downloads:', error);
+      throw error;
+    }
+
+    return count || 0;
+  } catch (error) {
+    console.error('Error counting downloads:', error);
+    return 0;
+  }
+};
+
+const getViewCounts = async (
+  resumeId?: string | null,
+  startDate?: Date
+): Promise<number> => {
+  try {
+    let query = supabase.from('cv_views').select('*', { count: 'exact' });
+
+    if (resumeId) {
+      query = query.eq('resume_id', resumeId);
+    }
+
+    if (startDate) {
+      query = query.gte('viewed_at', startDate.toISOString());
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      console.error('Error counting views:', error);
+      throw error;
+    }
+
+    return count || 0;
+  } catch (error) {
+    console.error('Error counting views:', error);
+    return 0;
+  }
+};
+
+export const fetchStats = async (
+  resumeId?: string | null
+): Promise<StatsData> => {
   try {
     const thirtyDaysAgo = subDays(new Date(), 30);
 
-    const { data: viewsData, error: viewsError } = await supabase
-      .from('cvs')
-      .select('id')
-      .gte('created_at', thirtyDaysAgo.toISOString())
-      .lt('created_at', new Date().toISOString());
-
-    if (viewsError) {
-      console.error('Error fetching views:', viewsError);
-      throw viewsError;
-    }
-
-    const downloads = parseInt(
-      localStorage.getItem('pdf_downloads_count') || '0'
-    );
+    const views = await getViewCounts(resumeId, thirtyDaysAgo);
+    const downloads = await getDownloadCounts(resumeId, thirtyDaysAgo);
 
     return {
-      totalViews: viewsData?.length || 0,
+      totalViews: views,
       totalDownloads: downloads,
     };
   } catch (error) {
@@ -34,33 +82,69 @@ export const fetchStats = async (): Promise<StatsData> => {
   }
 };
 
-export const fetchChartData = async (): Promise<ChartDataPoint[]> => {
+export const fetchChartData = async (
+  resumeId?: string | null
+): Promise<ChartDataPoint[]> => {
   try {
     const thirtyDaysAgo = subDays(new Date(), 30);
-
-    const { data: viewsData, error: viewsError } = await supabase
-      .from('cvs')
-      .select('created_at')
-      .gte('created_at', thirtyDaysAgo.toISOString())
-      .lt('created_at', new Date().toISOString());
-
-    if (viewsError) {
-      console.error('Error fetching chart data:', viewsError);
-      throw viewsError;
-    }
 
     const dailyData = Array.from({ length: 30 }, (_, i) => ({
       date: format(subDays(new Date(), 29 - i), 'MMM dd'),
       views: 0,
+      downloads: 0,
     }));
 
-    viewsData?.forEach((record) => {
-      const recordDate = format(new Date(record.created_at), 'MMM dd');
-      const dayData = dailyData.find((day) => day.date === recordDate);
-      if (dayData) {
-        dayData.views++;
-      }
-    });
+    let viewsQuery = supabase
+      .from('cv_views')
+      .select('viewed_at, resume_id')
+      .gte('viewed_at', thirtyDaysAgo.toISOString());
+
+    if (resumeId) {
+      viewsQuery = viewsQuery.eq('resume_id', resumeId);
+    }
+
+    const { data: viewsData, error: viewsError } = await viewsQuery;
+
+    if (viewsError) {
+      console.error('Error fetching views data:', viewsError);
+      throw viewsError;
+    }
+
+    let downloadsQuery = supabase
+      .from('pdf_downloads')
+      .select('downloaded_at, resume_id')
+      .gte('downloaded_at', thirtyDaysAgo.toISOString());
+
+    if (resumeId) {
+      downloadsQuery = downloadsQuery.eq('resume_id', resumeId);
+    }
+
+    const { data: downloadsData, error: downloadsError } = await downloadsQuery;
+
+    if (downloadsError) {
+      console.error('Error fetching downloads data:', downloadsError);
+      throw downloadsError;
+    }
+
+    if (viewsData) {
+      viewsData.forEach((record) => {
+        const recordDate = format(new Date(record.viewed_at), 'MMM dd');
+        const dayData = dailyData.find((day) => day.date === recordDate);
+        if (dayData) {
+          dayData.views++;
+        }
+      });
+    }
+
+    if (downloadsData) {
+      downloadsData.forEach((record) => {
+        const recordDate = format(new Date(record.downloaded_at), 'MMM dd');
+        const dayData = dailyData.find((day) => day.date === recordDate);
+        if (dayData) {
+          dayData.downloads++;
+        }
+      });
+    }
 
     return dailyData;
   } catch (error) {
@@ -68,6 +152,22 @@ export const fetchChartData = async (): Promise<ChartDataPoint[]> => {
     return Array.from({ length: 30 }, (_, i) => ({
       date: format(subDays(new Date(), 29 - i), 'MMM dd'),
       views: 0,
+      downloads: 0,
     }));
+  }
+};
+
+export const trackResumeView = async (resumeId: string, userId?: string) => {
+  try {
+    const { error } = await supabase.from('cv_views').insert({
+      resume_id: resumeId,
+      user_id: userId || null,
+    });
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error tracking view:', error);
   }
 };

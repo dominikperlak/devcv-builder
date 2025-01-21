@@ -1,12 +1,25 @@
 'use client';
 
 import html2pdf from 'html2pdf.js';
+import { supabase } from '@/lib/supabase';
 
-const incrementDownloadCount = () => {
-  const currentCount = parseInt(
-    localStorage.getItem('pdf_downloads_count') || '0'
-  );
-  localStorage.setItem('pdf_downloads_count', (currentCount + 1).toString());
+const incrementDownloadCount = async (resumeId: string) => {
+  try {
+    const { data, error } = await supabase.from('pdf_downloads').insert({
+      resume_id: resumeId,
+      user_id:
+        (await supabase.auth.getUser()).data.user?.id ||
+        '00000000-0000-0000-0000-000000000000',
+      downloaded_at: new Date().toISOString(),
+    });
+
+    if (error) {
+      console.error('Error recording download:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error updating download records:', error);
+  }
 };
 
 export const generatePDFBlob = async (
@@ -38,7 +51,8 @@ export const generatePDFBlob = async (
 
 export const generatePDF = async (
   elementId: string,
-  filename: string
+  filename: string,
+  resumeId: string
 ): Promise<boolean> => {
   try {
     const blob = await generatePDFBlob(elementId);
@@ -51,7 +65,7 @@ export const generatePDF = async (
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    incrementDownloadCount();
+    await incrementDownloadCount(resumeId);
 
     return true;
   } catch (error) {

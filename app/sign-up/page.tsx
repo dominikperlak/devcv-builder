@@ -61,7 +61,7 @@ const SignUp = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <div className="container mx-auto px-4">
         <header className="py-6 flex items-center justify-between">
-          <LogoWhite className="w-[170px]" />
+          <LogoWhite className="w-[200px]" />
         </header>
         <div className="max-w-md mx-auto mt-20 p-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
           <h2 className="text-3xl font-bold text-center mb-8">
