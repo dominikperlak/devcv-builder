@@ -32,7 +32,7 @@ export const Stats = ({ resumes, selectedResumeId }: StatsProps) => {
           <Eye className="h-6 w-6 text-[#0EA5E9]" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Total Views</p>
+          <p className="text-sm text-muted-foreground">Views</p>
           <h3 className="text-2xl font-bold">
             {isLoading ? '...' : stats.totalViews}
           </h3>
@@ -44,7 +44,7 @@ export const Stats = ({ resumes, selectedResumeId }: StatsProps) => {
           <Download className="h-6 w-6 text-[#0EA5E9]" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Total Downloads</p>
+          <p className="text-sm text-muted-foreground">Downloads</p>
           <h3 className="text-2xl font-bold">
             {isLoading ? '...' : stats.totalDownloads}
           </h3>
