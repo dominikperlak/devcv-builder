@@ -14,17 +14,18 @@ import { Label } from '@/app/components/ui/label';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Button } from '@/app/components/ui/button';
 import {
-  FileText,
   Briefcase,
   GraduationCap,
   Github,
   Wrench,
   Trash2,
   Plus,
+  User,
+  Mail,
+  FileText,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ResumeFormData } from '@/types/resume';
-import { SkillsSection } from './skillssection';
 import { ImportSection } from './importsection';
 
 export const ResumeForm = ({
@@ -100,7 +101,25 @@ export const ResumeForm = ({
         <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
           <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
             <span className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-blue-600" />
+              <span className="text-blue-600 font-medium">R</span>
+            </span>
+            Resume Title
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2 col-span-2">
+              <Label>Title</Label>
+              <Input
+                {...register('title')}
+                placeholder="Software Engineer Resume"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 bg-white rounded-xl border border-slate-200 p-6">
+          <h3 className="text-lg font-medium flex items-center gap-2 text-slate-900">
+            <span className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <User className="w-4 h-4 text-blue-600" />
             </span>
             Contact Information
           </h3>
@@ -120,10 +139,6 @@ export const ResumeForm = ({
                 type="email"
                 placeholder="john@example.com"
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input {...register('title')} placeholder="Software Engineer" />
             </div>
             <div className="space-y-2">
               <Label>LinkedIn</Label>
