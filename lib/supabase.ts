@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { ResumeFormData } from '@/types/resume';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
@@ -56,21 +56,5 @@ export const saveResume = async (formData: ResumeFormData) => {
   } catch (error) {
     console.error('Error in saveResume:', error);
     return { error: 'Failed to save resume' };
-  }
-};
-
-export const deleteResume = async (id: string) => {
-  try {
-    const { error } = await supabase.from('cv_store').delete().eq('id', id);
-
-    if (error) {
-      console.error('Error deleting resume:', error);
-      return { error: error.message };
-    }
-
-    return { success: true };
-  } catch (error) {
-    console.error('Error in deleteResume:', error);
-    return { error: 'Failed to delete resume' };
   }
 };

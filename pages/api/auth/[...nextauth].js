@@ -3,15 +3,15 @@ import GitHubProvider from 'next-auth/providers/github';
 import { createClient } from '@supabase/supabase-js';
 import { v5 as uuidv5 } from 'uuid';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  throw new Error('Required environment variables are missing');
 }
 
 if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error('Missing NEXTAUTH_SECRET environment variable');
+  throw new Error('Required environment variables are missing');
 }
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -46,7 +46,6 @@ export const authOptions = {
       if (account?.provider === 'github') {
         try {
           const userUUID = uuidv5(user.id.toString(), UUID_NAMESPACE);
-
           const { data: existingUser, error: fetchError } = await supabase
             .from('user_table')
             .select('id')
@@ -54,7 +53,6 @@ export const authOptions = {
             .single();
 
           if (fetchError && fetchError.code !== 'PGRST116') {
-            console.error('Error fetching user:', fetchError);
             return false;
           }
 
@@ -69,21 +67,19 @@ export const authOptions = {
               ]);
 
             if (insertError) {
-              console.error('Error inserting user:', insertError);
               return false;
             }
           }
 
           user.uuid = userUUID;
           return true;
-        } catch (error) {
-          console.error('Error in signIn callback:', error);
+        } catch {
           return false;
         }
       }
       return true;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ baseUrl }) {
       return `${baseUrl}/my-resume`;
     },
     async jwt({ token, user, account }) {
@@ -100,7 +96,6 @@ export const authOptions = {
       if (!session.user) {
         session.user = {};
       }
-
       if (token.uuid) {
         session.user.uuid = token.uuid;
       }
@@ -119,20 +114,43 @@ export const authOptions = {
           .single();
 
         session.isAuthenticated = !!user && !error;
-      } catch (error) {
-        console.error('Error verifying session:', error);
+      } catch {
         session.isAuthenticated = false;
       }
 
       return session;
     },
   },
-  events: {
-    async error(message) {
-      console.error('NextAuth Error:', message);
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      },
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      },
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      },
     },
   },
-  debug: true,
+  debug: false,
 };
 
 export default NextAuth(authOptions);
