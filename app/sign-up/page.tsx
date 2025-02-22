@@ -33,7 +33,7 @@ const SignUp = () => {
   const handleGithubSignUp = async () => {
     try {
       const result = await signIn('github', {
-        callbackUrl: process.env.NEXT_PUBLIC_GITHUB_CALLBACK_URL,
+        callbackUrl: process.env.GITHUB_CALLBACK_URL,
       });
 
       if (result?.error) {

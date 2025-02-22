@@ -19,8 +19,7 @@ export const generateShareLink = async (
       if (existingError) {
         console.error('Error checking existing share:', existingError);
       } else if (existingData?.share_id) {
-        const baseUrl =
-          process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+        const baseUrl = process.env.APP_URL || window.location.origin;
         return { link: `${baseUrl}/share/${existingData.share_id}` };
       }
     }
@@ -44,7 +43,7 @@ export const generateShareLink = async (
       throw new Error('No share ID returned from database');
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const baseUrl = process.env.APP_URL || window.location.origin;
     const shareLink = `${baseUrl}/share/${data.share_id}`;
     return { link: shareLink };
   } catch (error) {

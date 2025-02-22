@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Github, Lock } from 'lucide-react';
@@ -6,9 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { signIn } from 'next-auth/react';
 import LogoWhite from '@/public/logo-white';
+import { Checkbox } from '../components/ui/checkbox';
+import Link from 'next/link';
 
 const SignIn = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -21,9 +25,18 @@ const SignIn = () => {
   }
 
   const handleGithubSignIn = async () => {
+    if (!acceptedTerms) {
+      toast({
+        title: 'Terms & Conditions Required',
+        description: 'Please accept the terms and conditions to continue.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       const result = await signIn('github', {
-        callbackUrl: process.env.NEXT_PUBLIC_GITHUB_CALLBACK_URL,
+        callbackUrl: process.env.GITHUB_CALLBACK_URL,
       });
 
       if (result?.error) {
@@ -62,6 +75,35 @@ const SignIn = () => {
               </div>
               <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
               <p className="text-slate-400">Sign in to access your account</p>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) =>
+                    setAcceptedTerms(checked as boolean)
+                  }
+                  className="border-white/20"
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-slate-300 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-blue-400 hover:underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link
+                    href="/privacy"
+                    className="text-blue-400 hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
             </div>
 
             <Button
