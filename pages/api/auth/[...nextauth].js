@@ -50,9 +50,10 @@ export const authOptions = {
             .from('user_table')
             .select('id')
             .eq('id', userUUID)
-            .single();
+            .maybeSingle();
 
-          if (fetchError && fetchError.code !== 'PGRST116') {
+          if (fetchError) {
+            console.error('Error fetching user:', fetchError);
             return false;
           }
 
@@ -67,13 +68,15 @@ export const authOptions = {
               ]);
 
             if (insertError) {
+              console.error('Error inserting user:', insertError);
               return false;
             }
           }
 
           user.uuid = userUUID;
           return true;
-        } catch {
+        } catch (error) {
+          console.error('Sign-in error:', error);
           return false;
         }
       }
@@ -93,33 +96,17 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (!session.user) {
-        session.user = {};
-      }
-      if (token.uuid) {
-        session.user.uuid = token.uuid;
-      }
-      if (token.id) {
-        session.user.id = token.id;
-      }
-      if (token.accessToken) {
-        session.accessToken = token.accessToken;
-      }
-
-      try {
-        const { data: user, error } = await supabase
-          .from('user_table')
-          .select('id')
-          .eq('id', session.user.uuid)
-          .single();
-
-        session.isAuthenticated = !!user && !error;
-      } catch {
-        session.isAuthenticated = false;
-      }
-
+      session.user = {
+        id: token.id || null,
+        uuid: token.uuid || null,
+      };
+      session.accessToken = token.accessToken || null;
+      session.isAuthenticated = Boolean(token.uuid);
       return session;
     },
+  },
+  session: {
+    strategy: 'jwt',
   },
   debug: false,
 };
